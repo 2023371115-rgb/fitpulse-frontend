@@ -68,6 +68,9 @@ export class DevicePanelComponent implements OnChanges, OnInit {
     this.http.get<DeviceEntry[]>(this.base, { headers: this.headers() }).subscribe({
       next: devs => {
         this.devices = devs;
+        if (!this.selectedDeviceId && devs.length) {
+          this.selectedDeviceId = devs[0].id;
+        }
         this.cdr.markForCheck();
         devs.forEach(d => this.loadLatestMetric(d.id));
       },
@@ -99,6 +102,44 @@ export class DevicePanelComponent implements OnChanges, OnInit {
     return this.devices.find(d => d.id === this.selectedDeviceId) ?? null;
   }
 
+  get linkedCount(): number {
+    return this.devices.filter(d => d.status === 'linked').length;
+  }
+
+  get wearableCount(): number {
+    return this.devices.filter(d => d.type === 'wearable').length;
+  }
+
+  get tvCount(): number {
+    return this.devices.filter(d => d.type === 'smarttv').length;
+  }
+
+  get phoneCount(): number {
+    return this.devices.filter(d => d.type === 'phone').length;
+  }
+
+  registerDevice(type: DeviceEntry['type']): void {
+    const names: Record<DeviceEntry['type'], string> = {
+      wearable: 'FitPulse Wear OS',
+      smarttv: 'FitPulse Smart TV',
+      phone: 'Telefono FitPulse',
+      other: 'Dispositivo FitPulse'
+    };
+
+    this.http.post<DeviceEntry>(this.base, { name: names[type], type }, { headers: this.headers() }).subscribe({
+      next: dev => {
+        this.devices = [dev, ...this.devices];
+        this.selectedDeviceId = dev.id;
+        this.pairingLog.unshift(`[${this.now()}] ${dev.name} registrado`);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.pairingLog.unshift(`[${this.now()}] Error al registrar dispositivo`);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   async pairDevice(): Promise<void> {
     if (!this.selectedDevice) return;
     const dev = this.selectedDevice;
@@ -111,7 +152,7 @@ export class DevicePanelComponent implements OnChanges, OnInit {
       .subscribe({
         next: () => {
           dev.status = 'linked';
-          this.pairingLog.unshift(`[${this.now()}] ✔ "${dev.name}" enlazado`);
+          this.pairingLog.unshift(`[${this.now()}] "${dev.name}" enlazado`);
           this.loadLatestMetric(dev.id);
           this.cdr.markForCheck();
         },

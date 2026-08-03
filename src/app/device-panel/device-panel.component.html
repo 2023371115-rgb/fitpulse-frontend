@@ -15,36 +15,46 @@
     <button class="dp-close" (click)="panelOpen = false">×</button>
   </div>
 
-  <!-- Estadísticas de actividad -->
+  <!-- Estado de conexion -->
   <section class="dp-stats">
-    <h4 class="dp-section-title">Resumen de actividad</h4>
+    <h4 class="dp-section-title">Estado de conexion</h4>
     <div class="dp-stats-grid">
       <div class="dp-stat-card">
-        <span class="dp-stat-value">{{ totalFiles }}</span>
-        <span class="dp-stat-label">Archivos</span>
+        <span class="dp-stat-value">{{ devices.length }}</span>
+        <span class="dp-stat-label">Registrados</span>
       </div>
       <div class="dp-stat-card">
-        <span class="dp-stat-value">{{ totalSize }}</span>
-        <span class="dp-stat-label">Tamaño total</span>
+        <span class="dp-stat-value">{{ linkedCount }}</span>
+        <span class="dp-stat-label">Enlazados</span>
       </div>
       <div class="dp-stat-card">
-        <span class="dp-stat-value">{{ imageCount }}</span>
-        <span class="dp-stat-label">Imágenes</span>
+        <span class="dp-stat-value">{{ wearableCount }}</span>
+        <span class="dp-stat-label">Wearables</span>
       </div>
       <div class="dp-stat-card">
-        <span class="dp-stat-value">{{ videoCount }}</span>
-        <span class="dp-stat-label">Videos</span>
+        <span class="dp-stat-value">{{ tvCount }}</span>
+        <span class="dp-stat-label">Smart TV</span>
       </div>
       <div class="dp-stat-card">
-        <span class="dp-stat-value">{{ otherCount }}</span>
-        <span class="dp-stat-label">Otros</span>
+        <span class="dp-stat-value">{{ phoneCount }}</span>
+        <span class="dp-stat-label">Telefonos</span>
       </div>
     </div>
   </section>
 
   <!-- Lista de dispositivos -->
   <section class="dp-devices">
+    <h4 class="dp-section-title">Registrar dispositivo</h4>
+    <div class="dp-create-grid">
+      <button class="dp-btn dp-btn--secondary" (click)="registerDevice('wearable')">Wearable</button>
+      <button class="dp-btn dp-btn--secondary" (click)="registerDevice('smarttv')">Smart TV</button>
+      <button class="dp-btn dp-btn--secondary" (click)="registerDevice('phone')">Telefono</button>
+    </div>
+
     <h4 class="dp-section-title">Enlazar dispositivo</h4>
+    <div class="dp-empty" *ngIf="devices.length === 0">
+      Registra un wearable, Smart TV o telefono para probar la conexion FitPulse.
+    </div>
     <div class="dp-device-list">
       <div *ngFor="let dev of devices; trackBy: trackById"
            class="dp-device-item"
@@ -65,10 +75,10 @@
         </span>
         <div class="dp-device-info">
           <span class="dp-device-name">{{ dev.name }}</span>
-          <span class="dp-device-type">{{ dev.type === 'smarttv' ? 'Smart TV' : 'Wearable' }}</span>
+          <span class="dp-device-type">{{ dev.type === 'smarttv' ? 'Smart TV' : dev.type === 'wearable' ? 'Wearable' : dev.type === 'phone' ? 'Telefono' : 'Otro' }}</span>
         </div>
         <span class="dp-device-status" [class]="'dp-status--' + dev.status">
-          {{ dev.status === 'idle' ? 'Libre' : dev.status === 'pairing' ? 'Enlazando...' : dev.status === 'linked' ? 'Enlazado' : 'Error' }}
+          {{ dev.status === 'idle' ? 'Libre' : dev.status === 'pairing' ? 'Enlazando...' : dev.status === 'linked' ? 'Enlazado' : dev.status === 'offline' ? 'Offline' : 'Error' }}
         </span>
         <button *ngIf="dev.status === 'linked'" class="dp-btn dp-btn--unlink"
                 (click)="$event.stopPropagation(); unlinkDevice(dev)">Desenlazar</button>
@@ -82,7 +92,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-        Enlazar FitPulse
+        Enlazar seleccionado
       </button>
     </div>
   </section>
