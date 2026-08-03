@@ -556,6 +556,7 @@
 @media (max-width: 900px) {
   .app-header {
     padding: 10px 14px;
+    gap: 10px;
   }
 
   .app-search {
@@ -569,6 +570,66 @@
 }
 
 @media (max-width: 700px) {
+  .app-header {
+    grid-template-columns: minmax(0, 1fr) 42px;
+    align-items: start;
+  }
+
+  .header-brand-search {
+    gap: 12px;
+  }
+
+  .app-brand {
+    grid-template-columns: 36px auto;
+    min-width: 0;
+  }
+
+  .app-brand img {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .app-brand strong {
+    font-size: 1.35rem;
+  }
+
+  .app-brand small {
+    font-size: 0.56rem;
+  }
+
+  .app-search {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .app-search input,
+  .search-mode,
+  .search-subtype,
+  .btn-search,
+  .btn-clear {
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .app-search input {
+    grid-column: 1 / -1;
+  }
+
+  .btn-search,
+  .btn-clear {
+    padding: 0 10px;
+  }
+
+  .search-results-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search-results-head .btn-clear {
+    width: 100%;
+  }
+
   .theme-presets,
   .community-grid,
   .theme-editor {

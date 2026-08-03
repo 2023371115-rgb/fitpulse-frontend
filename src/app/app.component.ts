@@ -525,7 +525,9 @@ export class AppComponent implements OnDestroy {
 
   openTvMode() {
     this.menuOpen = false;
-    window.open(`${window.location.origin}${window.location.pathname}?tv=1`, '_blank');
+    const token = this.authService.getToken();
+    const tokenParam = token ? `&access_token=${encodeURIComponent(token)}` : '';
+    window.open(`${window.location.origin}${window.location.pathname}?tv=1${tokenParam}`, '_blank');
   }
 
   toggleDashboard() {
