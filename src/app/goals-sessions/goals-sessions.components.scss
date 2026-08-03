@@ -32,6 +32,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: .75rem;
 }
 
 .gs-title {
@@ -345,6 +346,89 @@
   }
 
   .add-goal-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .gs-wrap {
+    padding: 14px;
+    gap: 1rem;
+  }
+
+  .gs-section {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .gs-title {
+    font-size: clamp(1.05rem, 7vw, 1.45rem);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .gs-btn {
+    width: 100%;
+    min-height: 44px;
+    padding-inline: .9rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-card {
+    min-height: 104px;
+    padding: .85rem .5rem .7rem;
+  }
+
+  .summary-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .summary-value {
+    font-size: 1.55rem;
+  }
+
+  .form-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: .35rem;
+  }
+
+  .form-row label {
+    min-width: 0;
+  }
+
+  .session-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .session-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .session-info,
+  .session-stats {
+    min-width: 0;
+    width: calc(100% - 52px);
+  }
+
+  .gs-empty {
+    min-height: 0;
+    padding: 1.1rem .75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-grid {
     grid-template-columns: 1fr;
   }
 }

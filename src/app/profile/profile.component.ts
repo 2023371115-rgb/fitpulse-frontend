@@ -131,7 +131,10 @@ export class ProfileComponent implements OnInit {
         setTimeout(() => this.successMsg = '', 3500);
       },
       error: (err) => {
-        this.errorMsg = err?.error?.error || 'Error al guardar.';
+        const backendMessage = err?.error?.error || '';
+        this.errorMsg = backendMessage === 'Contraseña actual incorrecta'
+          ? 'La contraseña actual no coincide con la de esta cuenta.'
+          : backendMessage || 'Error al guardar.';
         this.saving = false;
       }
     });

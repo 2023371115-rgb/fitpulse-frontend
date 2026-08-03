@@ -280,3 +280,41 @@
   color: #ef4444;
   font-weight: 800;
 }
+
+@media (max-width: 700px) {
+  .profile-overlay {
+    padding: .75rem;
+    align-items: stretch;
+  }
+
+  .profile-panel {
+    max-width: none;
+    max-height: calc(100vh - 1.5rem);
+    overflow: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .avatar-section {
+    align-items: flex-start;
+  }
+
+  .avatar-info {
+    min-width: 0;
+  }
+
+  .avatar-name,
+  .avatar-email {
+    overflow-wrap: anywhere;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+  }
+
+  .btn-save,
+  .btn-logout {
+    width: 100%;
+    min-height: 44px;
+  }
+}
