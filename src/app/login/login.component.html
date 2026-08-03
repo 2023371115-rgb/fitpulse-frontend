@@ -19,8 +19,13 @@
       </div>
       <div class="field">
         <label>Contraseña</label>
-        <input type="password" [(ngModel)]="loginPassword" placeholder="••••••••"
-               (keydown.enter)="submit()" autocomplete="current-password" />
+        <div class="password-field">
+          <input [type]="showLoginPassword ? 'text' : 'password'" [(ngModel)]="loginPassword" placeholder="••••••••"
+                 (keydown.enter)="submit()" autocomplete="current-password" autocapitalize="off" spellcheck="false" />
+          <button type="button" class="password-toggle" (click)="showLoginPassword = !showLoginPassword" [attr.aria-label]="showLoginPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ showLoginPassword ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
       </div>
       <button class="login-btn" (click)="submit()" [disabled]="loading">
         {{ loading ? 'Entrando…' : 'Entrar' }}
@@ -41,8 +46,13 @@
       </div>
       <div class="field">
         <label>Contraseña</label>
-        <input type="password" [(ngModel)]="regPassword" placeholder="Mínimo 8 caracteres"
-               (keydown.enter)="submit()" autocomplete="new-password" />
+        <div class="password-field">
+          <input [type]="showRegisterPassword ? 'text' : 'password'" [(ngModel)]="regPassword" placeholder="Mínimo 8 caracteres"
+                 (keydown.enter)="submit()" autocomplete="new-password" autocapitalize="off" spellcheck="false" />
+          <button type="button" class="password-toggle" (click)="showRegisterPassword = !showRegisterPassword" [attr.aria-label]="showRegisterPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ showRegisterPassword ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
       </div>
       <button class="login-btn" (click)="submit()" [disabled]="loading">
         {{ loading ? 'Creando cuenta…' : 'Crear cuenta' }}

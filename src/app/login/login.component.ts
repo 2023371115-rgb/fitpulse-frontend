@@ -19,12 +19,16 @@ export class LoginComponent {
   loading = false;
   errorMsg = '';
   showTerms = false;
+  showLoginPassword = false;
+  showRegisterPassword = false;
 
   constructor(private auth: AuthService) {}
 
   switchTab(t: 'login' | 'register') {
     this.tab = t;
     this.errorMsg = '';
+    this.showLoginPassword = false;
+    this.showRegisterPassword = false;
   }
 
   submit() {
