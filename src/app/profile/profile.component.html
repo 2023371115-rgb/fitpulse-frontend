@@ -1,0 +1,79 @@
+<div class="profile-overlay" (click)="close.emit()">
+  <div class="profile-panel" (click)="$event.stopPropagation()">
+
+    <div class="profile-header">
+      <span class="profile-title">Mi perfil</span>
+      <button class="close-btn" (click)="close.emit()" title="Cerrar">✕</button>
+    </div>
+
+    <div *ngIf="loading" class="profile-loading">Cargando…</div>
+
+    <ng-container *ngIf="!loading && profile; else profileFailed">
+
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <div class="avatar-wrap">
+          <img *ngIf="avatarPreview" [src]="avatarPreview" class="avatar-img" alt="Foto de perfil" />
+          <div *ngIf="!avatarPreview" class="avatar">{{ initial }}</div>
+          <label class="avatar-edit" title="Cambiar foto">
+            📷
+            <input type="file" accept="image/png,image/jpeg,image/webp"
+                   (change)="onAvatarSelected($event)" style="display:none" />
+          </label>
+        </div>
+        <div class="avatar-info">
+          <div class="avatar-name">{{ name || profile?.email }}</div>
+          <div class="avatar-email">{{ profile?.email }}</div>
+          <div class="avatar-since" *ngIf="memberSince">Miembro desde {{ memberSince }}</div>
+          <button *ngIf="avatarPreview" class="remove-avatar" (click)="removeAvatar()">Quitar foto</button>
+        </div>
+      </div>
+
+      <div *ngIf="avatarError" class="msg error">{{ avatarError }}</div>
+      <div *ngIf="successMsg" class="msg success">{{ successMsg }}</div>
+      <div *ngIf="errorMsg" class="msg error">{{ errorMsg }}</div>
+
+      <div class="profile-form">
+        <div class="section-label">Información personal</div>
+
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="name" placeholder="Tu nombre" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" [value]="profile?.email || ''" disabled />
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-label">Cambiar contraseña</div>
+
+        <div class="field">
+          <label>Contraseña actual</label>
+          <input type="password" [(ngModel)]="currentPassword" placeholder="••••••••" />
+        </div>
+        <div class="field">
+          <label>Nueva contraseña</label>
+          <input type="password" [(ngModel)]="newPassword" placeholder="Mínimo 8 caracteres" />
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn-save" (click)="save()" [disabled]="saving">
+            {{ saving ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+          <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-template #profileFailed>
+      <div *ngIf="!loading" class="profile-error-state">
+        <div class="profile-error-icon">!</div>
+        <strong>No se pudo cargar el perfil</strong>
+        <span>{{ errorMsg || 'Vuelve a iniciar sesion para refrescar tus datos.' }}</span>
+        <button class="btn-logout" (click)="logout()">Cerrar sesion</button>
+      </div>
+    </ng-template>
+  </div>
+</div>

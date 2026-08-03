@@ -1,0 +1,70 @@
+<div class="terms-overlay" (click)="close.emit()">
+  <section class="terms-panel" role="dialog" aria-modal="true" aria-labelledby="terms-title" (click)="$event.stopPropagation()">
+    <header class="terms-header">
+      <div>
+        <span>FitPulse Health Lab</span>
+        <h2 id="terms-title">Terminos y uso</h2>
+      </div>
+      <button class="terms-close" type="button" aria-label="Cerrar terminos" (click)="close.emit()">x</button>
+    </header>
+
+    <div class="terms-content">
+      <section>
+        <h3>Uso de la aplicacion</h3>
+        <p>
+          FitPulse Health Lab es un prototipo academico para registrar actividad fisica,
+          metas, sesiones de entrenamiento y datos de demostracion relacionados con salud.
+        </p>
+      </section>
+
+      <section>
+        <h3>Datos de salud</h3>
+        <p>
+          Las metricas como pasos, frecuencia cardiaca, SpO2 o temperatura pueden provenir
+          de datos demo, registros manuales o servicios simulados. No deben usarse para
+          diagnostico medico ni para tomar decisiones clinicas.
+        </p>
+      </section>
+
+      <section>
+        <h3>Cuenta y seguridad</h3>
+        <p>
+          El acceso web usa autenticacion con token de sesion. La app Wear OS puede usar PIN
+          local y biometria opcional para proteger el dashboard del reloj. El usuario es
+          responsable de cerrar sesion en dispositivos compartidos.
+        </p>
+      </section>
+
+      <section>
+        <h3>Wearables y Smart TV</h3>
+        <p>
+          La integracion con wearable y Smart TV funciona como demostracion tecnica:
+          el sitio puede sincronizar estado hacia el panel TV y el reloj puede mostrar
+          datos desde backend o modo demo cuando no hay conexion.
+        </p>
+      </section>
+
+      <section>
+        <h3>Privacidad</h3>
+        <p>
+          La informacion registrada se usa dentro del proyecto para mostrar perfiles,
+          metas, sesiones y paneles de actividad. No se debe capturar informacion sensible
+          de terceros sin autorizacion.
+        </p>
+      </section>
+
+      <section>
+        <h3>Limitaciones</h3>
+        <p>
+          Este proyecto no reemplaza dispositivos medicos, servicios clinicos ni plataformas
+          profesionales de monitoreo. Algunas funciones pueden depender de conexion local,
+          base de datos, emuladores o servicios en desarrollo.
+        </p>
+      </section>
+    </div>
+
+    <footer class="terms-actions">
+      <button type="button" (click)="close.emit()">Entendido</button>
+    </footer>
+  </section>
+</div>

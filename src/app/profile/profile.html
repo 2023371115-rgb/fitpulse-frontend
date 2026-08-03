@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi perfil — Sketchbook</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f10;
+      --surface: #1a1a1d;
+      --border: #2e2e33;
+      --accent: #7c6cfc;
+      --accent-hover: #6b5aeb;
+      --text: #e8e8ed;
+      --muted: #888898;
+      --error: #ff5f6d;
+      --success: #4caf7d;
+      --radius: 10px;
+      --font: 'Inter', system-ui, sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem;
+    }
+
+    /* NAV */
+    nav {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+    .logo { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: .4rem .9rem;
+      border-radius: 8px;
+      font-size: .8rem;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all .2s;
+    }
+    .logout-btn:hover { border-color: var(--error); color: var(--error); }
+
+    /* AVATAR */
+    .avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: .75rem;
+    }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #b06cfc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .user-name { font-size: 1.3rem; font-weight: 600; }
+    .user-email { font-size: .85rem; color: var(--muted); }
+    .member-since { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+    }
+    .section-title {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+    label { font-size: .8rem; font-weight: 500; color: var(--muted); display: block; margin-bottom: .3rem; }
+
+    input {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: .9rem;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .btn {
+      padding: .75rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background .2s, transform .1s;
+      align-self: flex-start;
+    }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .message {
+      font-size: .83rem;
+      padding: .65rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .message.error { background: rgba(255,95,109,.1); color: var(--error); border: 1px solid rgba(255,95,109,.2); display: block; }
+    .message.success { background: rgba(76,175,125,.1); color: var(--success); border: 1px solid rgba(76,175,125,.2); display: block; }
+
+    .loading { color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">sketch<span>book</span></div>
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  </nav>
+
+  <div class="avatar-wrap">
+    <div class="avatar" id="avatarInitial">?</div>
+    <div>
+      <div class="user-name" id="displayName">Cargando...</div>
+      <div class="user-email" id="displayEmail"></div>
+      <div class="member-since" id="memberSince"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="msg" class="message"></div>
+
+    <p class="section-title">Información personal</p>
+    <div class="form">
+      <div>
+        <label>Nombre</label>
+        <input type="text" id="name" placeholder="Tu nombre" />
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" id="email" disabled style="opacity:.5; cursor:not-allowed" />
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-title">Cambiar contraseña</p>
+    <div class="form">
+      <div>
+        <label>Contraseña actual</label>
+        <input type="password" id="currentPassword" placeholder="••••••••" />
+      </div>
+      <div>
+        <label>Nueva contraseña</label>
+        <input type="password" id="newPassword" placeholder="Mínimo 8 caracteres" />
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="btn" onclick="saveProfile()">Guardar cambios</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login.html';
+
+    async function fetchProfile() {
+      try {
+        const res = await fetch('/api/profile', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.status === 401 || res.status === 403) {
+          localStorage.clear();
+          window.location.href = '/login.html';
+          return;
+        }
+        const data = await res.json();
+        const u = data.user;
+
+        document.getElementById('avatarInitial').textContent = u.name ? u.name[0].toUpperCase() : '?';
+        document.getElementById('displayName').textContent = u.name;
+        document.getElementById('displayEmail').textContent = u.email;
+        document.getElementById('memberSince').textContent =
+          'Miembro desde ' + new Date(u.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' });
+
+        document.getElementById('name').value = u.name || '';
+        document.getElementById('email').value = u.email || '';
+      } catch {
+        showMsg('No se pudo cargar el perfil', 'error');
+      }
+    }
+
+    async function saveProfile() {
+      const name = document.getElementById('name').value.trim();
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+
+      const body = {};
+      if (name) body.name = name;
+      if (currentPassword || newPassword) {
+        if (!currentPassword || !newPassword)
+          return showMsg('Completa ambos campos de contraseña', 'error');
+        if (newPassword.length < 8)
+          return showMsg('La nueva contraseña debe tener al menos 8 caracteres', 'error');
+        body.currentPassword = currentPassword;
+        body.newPassword = newPassword;
+      }
+
+      if (Object.keys(body).length === 0)
+        return showMsg('No hay cambios que guardar', 'error');
+
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) return showMsg(data.error, 'error');
+
+        showMsg('Perfil actualizado correctamente', 'success');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+
+        // Actualizar nombre visible
+        if (data.user.name) {
+          document.getElementById('displayName').textContent = data.user.name;
+          document.getElementById('avatarInitial').textContent = data.user.name[0].toUpperCase();
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+      } catch {
+        showMsg('Error al guardar', 'error');
+      }
+    }
+
+    function showMsg(text, type) {
+      const el = document.getElementById('msg');
+      el.textContent = text;
+      el.className = 'message' + (type ? ' ' + type : '');
+      setTimeout(() => { el.className = 'message'; }, 4000);
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/login.html';
+    }
+
+    fetchProfile();
+  </script>
+</body>
+</html>

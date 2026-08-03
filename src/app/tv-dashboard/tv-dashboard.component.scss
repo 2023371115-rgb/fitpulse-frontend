@@ -1,0 +1,270 @@
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #08110d;
+}
+
+.tv-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 5vh 5vw 3vh;
+  color: #f8fafc;
+  isolation: isolate;
+}
+
+.tv-overlay,
+.tv-video {
+  position: absolute;
+  inset: 0;
+}
+
+.tv-video {
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tv-overlay {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(3, 7, 18, 0.82), rgba(3, 7, 18, 0.48)),
+    linear-gradient(0deg, rgba(3, 7, 18, 0.64), rgba(3, 7, 18, 0.16));
+}
+
+.tv-header,
+.tv-footer,
+.tv-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.tv-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.tv-header > div:first-child {
+  min-width: 0;
+}
+
+.tv-kicker {
+  margin: 0 0 10px;
+  color: #facc15;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+h1 {
+  margin: 0;
+  font-size: 3.6rem;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.tv-status {
+  min-width: 190px;
+  display: grid;
+  gap: 12px;
+  justify-items: end;
+  font-size: 1rem;
+}
+
+.tv-status span {
+  padding: 8px 16px;
+  border: 1px solid rgba(250, 204, 21, 0.58);
+  border-radius: 8px;
+  color: #facc15;
+  background: rgba(42, 34, 15, 0.72);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tv-status span.is-offline {
+  border-color: rgba(250, 204, 21, 0.5);
+  color: #facc15;
+}
+
+.tv-status strong {
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.tv-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tv-card {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, auto);
+  gap: 10px;
+  padding: 20px 24px;
+  text-align: left;
+  color: #f8fafc;
+  overflow: hidden;
+  border: 1px solid rgba(203, 213, 225, 0.16);
+  border-radius: 12px;
+  background: rgba(15, 30, 24, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.tv-card.is-active {
+  border-color: #facc15;
+  box-shadow:
+    0 0 0 2px rgba(250, 204, 21, 0.9),
+    0 0 28px rgba(250, 204, 21, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.card-label {
+  color: #bfdbfe;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.card-value {
+  display: block;
+  min-height: 0;
+  font-size: 4rem;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.card-detail {
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.card-fields {
+  align-self: end;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.card-fields span {
+  min-width: 0;
+}
+
+.card-fields small,
+.card-fields b {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-fields small {
+  color: #cbd5e1;
+  font-size: 1rem;
+}
+
+.card-fields b {
+  margin-top: 4px;
+  font-size: 1.15rem;
+}
+
+.tv-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+.tv-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 7, 18, 0.78);
+  color: #f8fafc;
+  font-size: 2rem;
+  z-index: 2;
+}
+
+@media (max-width: 1100px) {
+  h1 {
+    font-size: 3rem;
+  }
+
+  .card-value {
+    font-size: 3.2rem;
+  }
+}
+
+@media (max-height: 760px) {
+  .tv-screen {
+    gap: 14px;
+    padding-top: 4vh;
+    padding-bottom: 2vh;
+  }
+
+  h1 {
+    font-size: 3.2rem;
+  }
+
+  .tv-kicker {
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+
+  .tv-status strong {
+    font-size: 1.8rem;
+  }
+
+  .tv-card {
+    gap: 8px;
+    padding: 16px 20px;
+  }
+
+  .card-label {
+    font-size: 1.15rem;
+  }
+
+  .card-value {
+    font-size: 3.2rem;
+  }
+
+  .card-detail {
+    font-size: 1rem;
+  }
+
+  .card-fields {
+    padding-top: 10px;
+  }
+
+  .card-fields small {
+    font-size: 0.78rem;
+  }
+
+  .card-fields b {
+    font-size: 0.9rem;
+  }
+
+  .tv-footer {
+    font-size: 0.9rem;
+  }
+}

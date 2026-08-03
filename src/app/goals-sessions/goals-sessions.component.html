@@ -1,0 +1,150 @@
+<div class="gs-wrap">
+
+  <!-- MENSAJE -->
+  <div *ngIf="msg" class="gs-msg" [class.success]="msgType==='success'" [class.error]="msgType==='error'">
+    {{ msg }}
+  </div>
+
+  <div *ngIf="loading" class="gs-loading">Cargando…</div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- RESUMEN SEMANAL -->
+    <section class="gs-section">
+      <h2 class="gs-title">Resumen de la semana</h2>
+      <div class="summary-grid" *ngIf="summary">
+        <div class="summary-card">
+          <span class="summary-icon icon-sessions" aria-hidden="true"></span>
+          <span class="summary-value">{{ summary.total_sessions }}</span>
+          <span class="summary-label">Sesiones</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-icon icon-steps" aria-hidden="true"></span>
+          <span class="summary-value">{{ summary.total_steps | number }}</span>
+          <span class="summary-label">Pasos</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-icon icon-calories" aria-hidden="true"></span>
+          <span class="summary-value">{{ summary.total_calories | number:'1.0-0' }}</span>
+          <span class="summary-label">Calorías</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-icon icon-minutes" aria-hidden="true"></span>
+          <span class="summary-value">{{ summary.total_minutes }}</span>
+          <span class="summary-label">Minutos</span>
+        </div>
+        <div class="summary-card summary-card-alert">
+          <span class="summary-icon icon-heart" aria-hidden="true"></span>
+          <span class="summary-value">{{ summary.avg_heart_rate | number:'1.0-0' }}</span>
+          <span class="summary-label">Frec. media</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- METAS -->
+    <section class="gs-section">
+      <div class="section-header">
+        <h2 class="gs-title">Mis metas</h2>
+        <button class="gs-btn" (click)="showGoalForm = !showGoalForm">
+          {{ showGoalForm ? 'Cancelar' : '+ Agregar meta' }}
+        </button>
+      </div>
+
+      <div class="add-goal-form" *ngIf="showGoalForm">
+        <select [(ngModel)]="newGoalType" class="gs-select">
+          <option *ngFor="let t of goalTypes" [value]="t.value">{{ t.label }}</option>
+        </select>
+        <input type="number" [(ngModel)]="newGoalTarget" class="gs-input"
+               placeholder="Valor ({{ selectedGoalUnit }})" min="1" (keyup.enter)="addGoal()" />
+        <button class="gs-btn" (click)="addGoal()" [disabled]="savingGoal">
+          {{ savingGoal ? 'Guardando...' : 'Guardar meta' }}
+        </button>
+      </div>
+
+      <div class="goals-list" *ngIf="goals.length > 0">
+        <div class="goal-item" *ngFor="let g of goals" [class.inactive]="!g.active">
+          <div class="goal-info">
+            <span class="goal-type">{{ goalLabel(g.type) }}</span>
+            <span class="goal-value">{{ g.target }} {{ g.unit }}</span>
+          </div>
+          <div class="goal-actions">
+            <button class="btn-toggle" (click)="toggleGoal(g)" [title]="g.active ? 'Desactivar' : 'Activar'">
+              {{ g.active ? '✓' : '○' }}
+            </button>
+            <button class="btn-del" (click)="deleteGoal(g)" title="Eliminar">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="gs-empty" *ngIf="goals.length === 0">
+        <span class="empty-icon" aria-hidden="true">+</span>
+        <strong>No tienes metas aun</strong>
+        <span>Agrega tu primera meta para empezar a seguir tu progreso.</span>
+        <button class="gs-btn empty-action" *ngIf="!showGoalForm" (click)="showGoalForm = true">Agregar meta</button>
+      </div>
+    </section>
+
+    <!-- HISTORIAL DE SESIONES -->
+    <section class="gs-section">
+      <div class="section-header">
+        <h2 class="gs-title">Historial de entrenamientos</h2>
+        <button class="gs-btn" (click)="showNewSession = !showNewSession">
+          {{ showNewSession ? 'Cancelar' : '+ Nueva sesión' }}
+        </button>
+      </div>
+
+      <div class="new-session-form" *ngIf="showNewSession">
+        <select [ngModel]="newSession.type" (ngModelChange)="onSessionTypeChange($event)" class="gs-select">
+          <option *ngFor="let t of sessionTypes" [value]="t.value">{{ t.label }}</option>
+        </select>
+        <div class="session-form-hint">{{ activeSessionForm.hint }}</div>
+        <div class="form-row">
+          <label>Inicio</label>
+          <input type="datetime-local" [(ngModel)]="newSession.started_at" class="gs-input" />
+        </div>
+        <div class="form-row">
+          <label>Fin</label>
+          <input type="datetime-local" [(ngModel)]="newSession.ended_at" class="gs-input" />
+        </div>
+        <div class="session-metrics">
+          <label class="metric-field" *ngIf="showSessionField('steps')">
+            <span>Pasos</span>
+            <input type="number" [(ngModel)]="newSession.steps" class="gs-input" placeholder="Ej. 6500" min="0" />
+          </label>
+          <label class="metric-field" *ngIf="showSessionField('calories')">
+            <span>Calorias</span>
+            <input type="number" [(ngModel)]="newSession.calories" class="gs-input" placeholder="Ej. 320" min="0" />
+          </label>
+          <label class="metric-field" *ngIf="showSessionField('avg_heart_rate')">
+            <span>FC media</span>
+            <input type="number" [(ngModel)]="newSession.avg_heart_rate" class="gs-input" placeholder="Ej. 135" min="0" />
+          </label>
+        </div>
+        <textarea [(ngModel)]="newSession.notes" class="gs-textarea" [placeholder]="activeSessionForm.notes + ' (opcional)'"></textarea>
+        <button class="gs-btn" (click)="addSession()">Guardar sesión</button>
+      </div>
+
+      <div class="sessions-list" *ngIf="sessions.length > 0">
+        <div class="session-item" *ngFor="let s of sessions">
+          <img class="session-icon" [src]="sessionIcon(s.type)" alt="" />
+          <div class="session-info">
+            <span class="session-type">{{ sessionLabel(s.type) }}</span>
+            <span class="session-date">{{ formatDate(s.started_at) }}</span>
+          </div>
+          <div class="session-stats">
+            <span *ngIf="s.steps"><b>Pasos</b> {{ s.steps | number }}</span>
+            <span *ngIf="s.calories"><b>Kcal</b> {{ s.calories | number:'1.0-0' }}</span>
+            <span *ngIf="s.avg_heart_rate"><b>FC</b> {{ s.avg_heart_rate }} lpm</span>
+            <span><b>Tiempo</b> {{ duration(s) }}</span>
+          </div>
+          <button class="btn-del" (click)="deleteSession(s)" title="Eliminar">✕</button>
+        </div>
+      </div>
+      <div class="gs-empty" *ngIf="sessions.length === 0">
+        <span class="empty-icon" aria-hidden="true">+</span>
+        <strong>No hay sesiones registradas aun</strong>
+        <span>Registra tu primer entrenamiento para verlo aqui.</span>
+      </div>
+    </section>
+
+  </ng-container>
+</div>

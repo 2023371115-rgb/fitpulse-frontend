@@ -1,0 +1,205 @@
+<!-- LOGIN: se muestra cuando no hay sesión -->
+<app-login *ngIf="!(isAuthenticated$ | async)"></app-login>
+
+<app-tv-dashboard *ngIf="(isAuthenticated$ | async) && tvMode"></app-tv-dashboard>
+
+<!-- APP PRINCIPAL: solo cuando hay sesión -->
+<ng-container *ngIf="(isAuthenticated$ | async) && !tvMode">
+
+<header class="app-header">
+  <div class="header-brand-search">
+    <div class="app-brand" aria-label="FitPulse Health Lab">
+      <img src="assets/sport-icons/fitpulse-mark.svg" alt="" />
+      <span>
+        <strong>FitPulse</strong>
+        <small>Health Lab</small>
+      </span>
+    </div>
+    <div class="app-search">
+      <input
+        type="search"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Buscar ejercicios, dispositivos..."
+        aria-label="Buscar ejercicios, dispositivos o archivos"
+      />
+      <select [(ngModel)]="searchMode" aria-label="Modo de búsqueda" class="search-mode">
+        <option value="internal">Interno</option>
+        <option value="external">Externo</option>
+      </select>
+      <select *ngIf="searchMode === 'external'" [(ngModel)]="externalType" aria-label="Tipo de búsqueda externa" class="search-subtype">
+        <option value="web">Web</option>
+      </select>
+      <button class="btn-search" (click)="onSearch()">Buscar</button>
+      <button class="btn-clear" *ngIf="searchQuery" (click)="clearSearch()">Limpiar</button>
+    </div>
+  </div>
+
+  <button
+    class="hamburger-btn"
+    type="button"
+    [class.is-open]="menuOpen"
+    [attr.aria-expanded]="menuOpen"
+    aria-label="Abrir menu"
+    (click)="toggleMobileMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="header-actions" [class.is-open]="menuOpen">
+    <div class="theme-picker-wrap">
+      <button class="btn-theme" (click)="toggleThemePicker()" title="Personalizar apariencia">
+        <span class="theme-current" [style.background]="customTheme.primary"></span>
+        Apariencia
+      </button>
+    </div>
+    <button class="btn-dashboard" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
+    <button class="btn-dashboard" (click)="openTvMode()">Modo TV</button>
+    <button class="btn-logout" (click)="openTerms()">Términos</button>
+
+    <!-- BOTÓN PERFIL -->
+    <button class="btn-logout" (click)="openProfile()" title="Mi perfil">Mi perfil</button>
+
+    <button class="btn-logout" (click)="onLogout()">Cerrar Sesión</button>
+  </div>
+</header>
+
+<div class="theme-overlay" *ngIf="showThemePicker" (click)="closeThemePicker()">
+  <div class="theme-panel" (click)="$event.stopPropagation()">
+    <div class="theme-panel-head">
+      <div>
+        <strong>Perfil visual deportivo</strong>
+        <span>Ajusta la lectura de tus datos para telefono, TV y sesiones de entrenamiento.</span>
+      </div>
+      <button class="icon-button" (click)="closeThemePicker()" aria-label="Cerrar">x</button>
+    </div>
+
+    <div class="theme-presets" aria-label="Temas predefinidos">
+      <button
+        *ngFor="let t of themes"
+        class="preset-card"
+        [class.active]="t.name === activeTheme"
+        (click)="applyTheme(t.name)">
+        <span class="preset-swatch">
+          <i [style.background]="t.primary"></i>
+          <i [style.background]="t.accent"></i>
+          <i [style.background]="t.background"></i>
+        </span>
+        <span class="preset-copy">
+          <strong>{{ t.label }}</strong>
+          <small>{{ t.description }}</small>
+        </span>
+      </button>
+    </div>
+
+    <div class="theme-editor">
+      <label>
+        <span>Zona activa</span>
+        <div class="color-field">
+          <input type="color" [(ngModel)]="customTheme.primary" (change)="applyCustomTheme()" />
+          <small>{{ customTheme.primary }}</small>
+        </div>
+      </label>
+      <label>
+        <span>Alerta/meta</span>
+        <div class="color-field">
+          <input type="color" [(ngModel)]="customTheme.accent" (change)="applyCustomTheme()" />
+          <small>{{ customTheme.accent }}</small>
+        </div>
+      </label>
+      <label>
+        <span>Fondo</span>
+        <div class="color-field">
+          <input type="color" [(ngModel)]="customTheme.background" (change)="applyCustomTheme()" />
+          <small>{{ customTheme.background }}</small>
+        </div>
+      </label>
+      <label>
+        <span>Tarjetas</span>
+        <div class="color-field">
+          <input type="color" [(ngModel)]="customTheme.surface" (change)="applyCustomTheme()" />
+          <small>{{ customTheme.surface }}</small>
+        </div>
+      </label>
+      <label>
+        <span>Patron</span>
+        <select [(ngModel)]="customTheme.pattern" (change)="applyCustomTheme()">
+          <option *ngFor="let pattern of patternOptions" [ngValue]="pattern.value">{{ pattern.label }}</option>
+        </select>
+      </label>
+      <label class="range-field">
+        <span>Radio de tarjetas {{ customTheme.radius }}px</span>
+        <input type="range" min="2" max="18" [(ngModel)]="customTheme.radius" (change)="applyCustomTheme()" />
+      </label>
+      <label class="range-field">
+        <span>Densidad del panel {{ customTheme.density }}px</span>
+        <input type="range" min="10" max="24" [(ngModel)]="customTheme.density" (change)="applyCustomTheme()" />
+      </label>
+    </div>
+
+    <div class="theme-preview">
+      <div class="preview-window">
+        <div class="preview-bar"></div>
+        <strong>Resumen de actividad</strong>
+        <span>Pasos, frecuencia cardiaca y sesiones mantienen contraste y lectura rapida.</span>
+        <button>Ver progreso</button>
+      </div>
+    </div>
+
+    <div class="community-section">
+      <div class="community-head">
+        <div>
+          <strong>Perfiles rapidos</strong>
+          <span>Variantes listas para demo, TV o entrenamientos nocturnos.</span>
+        </div>
+        <button class="btn-reset" (click)="exportTheme()">Exportar</button>
+      </div>
+
+      <div class="community-grid">
+        <button
+          *ngFor="let theme of filteredCommunityThemes"
+          class="community-card"
+          (click)="applyCommunityTheme(theme)">
+          <span class="preset-swatch">
+            <i [style.background]="theme.primary"></i>
+            <i [style.background]="theme.accent"></i>
+            <i [style.background]="theme.background"></i>
+          </span>
+          <span>
+            <strong>{{ theme.label }}</strong>
+            <small>{{ theme.description }}</small>
+          </span>
+        </button>
+      </div>
+    </div>
+    <span class="theme-note" *ngIf="themeMessage">{{ themeMessage }}</span>
+
+    <div class="theme-panel-actions">
+      <button class="btn-reset" (click)="resetTheme()">Restablecer</button>
+      <button class="btn-save" (click)="applyCustomTheme(); closeThemePicker()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<main class="container" *ngIf="!showDashboard">
+  <section class="search-results-panel" [class.is-visible]="searchPanelOpen">
+    <div class="search-results-head">
+      <div>
+        <strong>{{ searchMode === 'external' ? 'Resultados externos' : 'Resultados internos' }}</strong>
+        <span>{{ searchQuery ? 'Busqueda: ' + searchQuery : 'Busca archivos guardados o resultados web.' }}</span>
+      </div>
+      <button class="btn-clear" *ngIf="searchPanelOpen" (click)="clearSearch()">Cerrar</button>
+    </div>
+    <app-virtual-folder></app-virtual-folder>
+  </section>
+  <app-goals-sessions></app-goals-sessions>
+</main>
+
+<app-dashboard-view *ngIf="showDashboard" [theme]="customTheme"></app-dashboard-view>
+
+<!-- PANEL DE PERFIL -->
+<app-profile *ngIf="showProfile" (close)="closeProfile()"></app-profile>
+<app-terms-modal *ngIf="showTerms" (close)="closeTerms()"></app-terms-modal>
+
+</ng-container>

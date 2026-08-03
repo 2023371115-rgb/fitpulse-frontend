@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────
+   Fuente de verdad: /api/tokens (backend) y data/tokens.json
+   Cambiar un color aquí lo aplica en toda la app Angular automáticamente.
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Colores */
+  --color-primary:      #0F9D58;
+  --color-primary-dark: #0B7A45;
+  --color-on-primary:   #FFFFFF;
+  --color-accent:       #F97316;
+  --color-background:   #F3FBF7;
+  --color-surface:      #FFFFFF;
+  --color-text:         #123024;
+  --color-text-muted:   #4D6C60;
+  --color-border:       #CFE8DB;
+  --color-border-strong: #8CB5A3;
+
+  /* Tipografía */
+  --font-body:      'Inter', 'Segoe UI', sans-serif;
+  --font-display:   'Barlow Condensed', 'Inter', sans-serif;
+  --font-size-base: 14px;
+  --font-size-lg:   18px;
+
+  /* Espaciados */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+
+  /* Bordes */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Personalizacion segura */
+  --profile-bg-pattern: none;
+  --profile-bg-size: 20px 20px;
+  --profile-bg-image: none;
+  --profile-bg-fit: cover;
+  --profile-bg-repeat: no-repeat;
+  --profile-bg-position: center;
+  --profile-bg-attachment: scroll;
+}
+
+/* Global styles */
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  background-image: var(--profile-bg-image), var(--profile-bg-pattern);
+  background-size: var(--profile-bg-fit), var(--profile-bg-size);
+  background-repeat: var(--profile-bg-repeat), repeat;
+  background-position: var(--profile-bg-position), top left;
+  background-attachment: var(--profile-bg-attachment), scroll;
+  margin: 0;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: var(--font-body);
+}
+.container { max-width: 1180px; margin: 0 auto; }

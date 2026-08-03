@@ -1,0 +1,58 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|apple|ico|otf|ttf|woff|woff2)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-performance-search",
+      "urls": [
+        "/api/workspaces/**/search"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "1h",
+        "timeout": "3s",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "api-tv-network-first",
+      "urls": [
+        "/api/tv/state",
+        "/api/devices/**/metrics/latest",
+        "/api/sessions/summary"
+      ],
+      "cacheConfig": {
+        "maxSize": 80,
+        "maxAge": "30m",
+        "timeout": "2s",
+        "strategy": "freshness"
+      }
+    }
+  ]
+}

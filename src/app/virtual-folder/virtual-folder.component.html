@@ -1,0 +1,56 @@
+<div class="vf-root">
+  <div *ngIf="!externalMode" [class.vf-grid]="!isMobile" [class.vf-list]="isMobile">
+    <div *ngFor="let f of files; trackBy: trackById" class="vf-item" (click)="openPreview(f)">
+
+      <div class="vf-preview-wrapper">
+        <img *ngIf="f.thumbnail_url" [src]="toAssetUrl(f.thumbnail_url)" alt="Thumbnail" />
+        <div *ngIf="!f.thumbnail_url" class="vf-icon">
+          <span>{{ getFileExtension(f.mime_type) }}</span>
+        </div>
+      </div>
+
+      <div class="vf-meta">
+        <div class="vf-title" [title]="f.original_name || f.filename">
+          {{ f.original_name || f.filename }}
+        </div>
+        <div class="vf-sub">
+          {{ formatBytes(f.size) }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="externalMode" class="external-results">
+    <div *ngIf="externalError" class="external-error">{{ externalError }}</div>
+    <div *ngIf="!externalError && externalResults?.length === 0" class="external-empty">
+      No se encontraron resultados externos.
+    </div>
+    <div *ngFor="let item of externalResults" class="external-item">
+      <div class="external-card">
+        <div class="external-thumb" *ngIf="item.thumbnailUrl || item.image || item.imageUrl">
+          <img [src]="item.thumbnailUrl || item.image || item.imageUrl" alt="{{ item.title }}" />
+        </div>
+        <div class="external-body">
+          <a [href]="item.sourceUrl || item.link" target="_blank" rel="noopener" class="external-title">{{ item.title }}</a>
+          <div class="external-link">{{ item.sourceDomain || item.displayLink || item.link }}</div>
+          <div class="external-snippet">{{ item.snippet }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-modal" *ngIf="preview">
+    <div class="vf-modal-backdrop" (click)="closePreview()"></div>
+    <div class="vf-modal-content">
+      <button class="vf-modal-close" (click)="closePreview()" aria-label="Cerrar">×</button>
+      <div class="vf-modal-media">
+        <img *ngIf="preview.type?.startsWith('image')" [src]="preview.url" />
+        <video *ngIf="preview.type?.startsWith('video')" [src]="preview.url" controls></video>
+        <audio *ngIf="preview.type?.startsWith('audio')" [src]="preview.url" controls></audio>
+      </div>
+    </div>
+  </div>
+
+<!-- Panel flotante de dispositivos inteligentes (Práctica 7/8) -->
+<app-device-panel [files]="files"></app-device-panel>

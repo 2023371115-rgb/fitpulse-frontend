@@ -1,0 +1,58 @@
+<div class="login-backdrop">
+  <div class="login-card">
+
+    <div class="login-brand">FitPulse<span>Lab</span></div>
+
+    <div class="login-tabs">
+      <button [class.active]="tab === 'login'" (click)="switchTab('login')">Iniciar sesión</button>
+      <button [class.active]="tab === 'register'" (click)="switchTab('register')">Crear cuenta</button>
+    </div>
+
+    <div *ngIf="errorMsg" class="login-error">{{ errorMsg }}</div>
+
+    <!-- LOGIN -->
+    <div *ngIf="tab === 'login'" class="login-form">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="loginEmail" placeholder="tu@email.com"
+               (keydown.enter)="submit()" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="loginPassword" placeholder="••••••••"
+               (keydown.enter)="submit()" autocomplete="current-password" />
+      </div>
+      <button class="login-btn" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Entrando…' : 'Entrar' }}
+      </button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div *ngIf="tab === 'register'" class="login-form">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" [(ngModel)]="regName" placeholder="Tu nombre"
+               (keydown.enter)="submit()" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="regEmail" placeholder="tu@email.com"
+               (keydown.enter)="submit()" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="regPassword" placeholder="Mínimo 8 caracteres"
+               (keydown.enter)="submit()" autocomplete="new-password" />
+      </div>
+      <button class="login-btn" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Creando cuenta…' : 'Crear cuenta' }}
+      </button>
+    </div>
+
+    <button class="terms-link" type="button" (click)="showTerms = true">
+      Terminos y uso
+    </button>
+  </div>
+
+  <app-terms-modal *ngIf="showTerms" (close)="showTerms = false"></app-terms-modal>
+</div>

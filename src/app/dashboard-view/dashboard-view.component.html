@@ -1,0 +1,19 @@
+<div class="dash-shell">
+  <div class="dash-head">
+    <div>
+      <h2>Centro de Dispositivos</h2>
+      <p>Panel de salud y actividad fisica enlazado con tu estilo personalizado.</p>
+    </div>
+    <span class="dash-badge">FitPulse Health</span>
+  </div>
+
+  <div class="dash-container">
+    <iframe
+      [src]="flutterUrl"
+      class="dash-frame"
+      allow="accelerometer; gyroscope"
+      [attr.data-theme-key]="themeKey"
+      title="FitPulse Health Dashboard"
+    ></iframe>
+  </div>
+</div>

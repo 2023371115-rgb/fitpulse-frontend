@@ -1,0 +1,121 @@
+<!-- Botón flotante para abrir/cerrar el panel -->
+<button class="dp-toggle" (click)="panelOpen = !panelOpen" [class.dp-toggle--open]="panelOpen" title="Panel de dispositivos">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+    <line x1="8" y1="21" x2="16" y2="21"></line>
+    <line x1="12" y1="17" x2="12" y2="21"></line>
+  </svg>
+  <span>Dispositivos</span>
+</button>
+
+<div class="dp-panel" [class.dp-panel--open]="panelOpen">
+  <div class="dp-header">
+    <span class="dp-title">Dispositivos inteligentes</span>
+    <button class="dp-close" (click)="panelOpen = false">×</button>
+  </div>
+
+  <!-- Estadísticas de actividad -->
+  <section class="dp-stats">
+    <h4 class="dp-section-title">Resumen de actividad</h4>
+    <div class="dp-stats-grid">
+      <div class="dp-stat-card">
+        <span class="dp-stat-value">{{ totalFiles }}</span>
+        <span class="dp-stat-label">Archivos</span>
+      </div>
+      <div class="dp-stat-card">
+        <span class="dp-stat-value">{{ totalSize }}</span>
+        <span class="dp-stat-label">Tamaño total</span>
+      </div>
+      <div class="dp-stat-card">
+        <span class="dp-stat-value">{{ imageCount }}</span>
+        <span class="dp-stat-label">Imágenes</span>
+      </div>
+      <div class="dp-stat-card">
+        <span class="dp-stat-value">{{ videoCount }}</span>
+        <span class="dp-stat-label">Videos</span>
+      </div>
+      <div class="dp-stat-card">
+        <span class="dp-stat-value">{{ otherCount }}</span>
+        <span class="dp-stat-label">Otros</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lista de dispositivos -->
+  <section class="dp-devices">
+    <h4 class="dp-section-title">Enlazar dispositivo</h4>
+    <div class="dp-device-list">
+      <div *ngFor="let dev of devices; trackBy: trackById"
+           class="dp-device-item"
+           [class.dp-device-item--selected]="selectedDeviceId === dev.id"
+           (click)="selectedDeviceId = dev.id">
+        <span class="dp-device-icon">
+          <svg *ngIf="dev.type === 'smarttv'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <svg *ngIf="dev.type === 'wearable'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+            <line x1="12" y1="18" x2="12" y2="18"></line>
+          </svg>
+        </span>
+        <div class="dp-device-info">
+          <span class="dp-device-name">{{ dev.name }}</span>
+          <span class="dp-device-type">{{ dev.type === 'smarttv' ? 'Smart TV' : 'Wearable' }}</span>
+        </div>
+        <span class="dp-device-status" [class]="'dp-status--' + dev.status">
+          {{ dev.status === 'idle' ? 'Libre' : dev.status === 'pairing' ? 'Enlazando...' : dev.status === 'linked' ? 'Enlazado' : 'Error' }}
+        </span>
+        <button *ngIf="dev.status === 'linked'" class="dp-btn dp-btn--unlink"
+                (click)="$event.stopPropagation(); unlinkDevice(dev)">Desenlazar</button>
+      </div>
+    </div>
+
+    <div class="dp-actions">
+      <button class="dp-btn dp-btn--primary"
+              [disabled]="!selectedDeviceId || selectedDevice?.status === 'pairing' || selectedDevice?.status === 'linked'"
+              (click)="pairDevice()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        Enlazar FitPulse
+      </button>
+    </div>
+  </section>
+
+  <!-- Log de eventos -->
+  <section class="dp-log" *ngIf="pairingLog.length > 0">
+    <h4 class="dp-section-title">Registro</h4>
+    <div class="dp-log-body">
+      <div *ngFor="let entry of pairingLog" class="dp-log-entry">{{ entry }}</div>
+    </div>
+  </section>
+
+  <!-- Métricas del dispositivo enlazado -->
+  <section class="dp-metrics" *ngIf="selectedDevice && latestMetrics[selectedDevice.id]">
+    <h4 class="dp-section-title">Últimas métricas · {{ selectedDevice.name }}</h4>
+    <div class="dp-stats-grid">
+      <div class="dp-stat-card" *ngIf="latestMetrics[selectedDevice.id].heart_rate != null">
+        <span class="dp-stat-value">{{ latestMetrics[selectedDevice.id].heart_rate }}</span>
+        <span class="dp-stat-label">♥ lpm</span>
+      </div>
+      <div class="dp-stat-card" *ngIf="latestMetrics[selectedDevice.id].spo2 != null">
+        <span class="dp-stat-value">{{ latestMetrics[selectedDevice.id].spo2 }}%</span>
+        <span class="dp-stat-label">SpO₂</span>
+      </div>
+      <div class="dp-stat-card" *ngIf="latestMetrics[selectedDevice.id].steps != null">
+        <span class="dp-stat-value">{{ latestMetrics[selectedDevice.id].steps }}</span>
+        <span class="dp-stat-label">Pasos</span>
+      </div>
+      <div class="dp-stat-card" *ngIf="latestMetrics[selectedDevice.id].temperature != null">
+        <span class="dp-stat-value">{{ latestMetrics[selectedDevice.id].temperature }}°C</span>
+        <span class="dp-stat-label">Temperatura</span>
+      </div>
+    </div>
+    <span class="dp-metric-time">Actualizado: {{ latestMetrics[selectedDevice.id].recorded_at | date:'HH:mm:ss' }}</span>
+  </section>
+</div>

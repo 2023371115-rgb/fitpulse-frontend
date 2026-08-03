@@ -1,0 +1,51 @@
+<section class="tv-screen" [style.background]="backgroundStyle">
+  <div class="tv-overlay"></div>
+
+  <video
+    *ngIf="selectedCard && mediaMap[selectedCard.media].video && !videoFailed"
+    class="tv-video"
+    [src]="mediaMap[selectedCard.media].video"
+    autoplay
+    muted
+    loop
+    playsinline
+    (error)="onVideoError()">
+  </video>
+
+  <header class="tv-header">
+    <div>
+      <p class="tv-kicker">FitPulse Health</p>
+      <h1>Smart TV Dashboard</h1>
+    </div>
+    <div class="tv-status">
+      <span [class.is-offline]="offline">{{ offline ? 'Cache sin conexion' : 'En vivo SSE' }}</span>
+      <strong>{{ now | date:'HH:mm:ss' }}</strong>
+    </div>
+  </header>
+
+  <main class="tv-grid" aria-label="Datos principales de salud">
+    <button
+      *ngFor="let card of cards; let i = index; trackBy: trackByCard"
+      class="tv-card"
+      [class.is-active]="i === selectedIndex"
+      (click)="selectCard(i)"
+      [attr.aria-label]="card.label + ' ' + card.value">
+      <span class="card-label">{{ card.label }}</span>
+      <strong class="card-value">{{ card.value }}</strong>
+      <span class="card-detail">{{ card.detail }}</span>
+      <span class="card-fields">
+        <span *ngFor="let field of card.fields">
+          <small>{{ field.label }}</small>
+          <b>{{ field.value }}</b>
+        </span>
+      </span>
+    </button>
+  </main>
+
+  <footer class="tv-footer">
+    <span>{{ lastAction }}</span>
+    <span>D-pad: flechas + Enter</span>
+  </footer>
+
+  <div class="tv-loading" *ngIf="loading">Cargando datos de la API...</div>
+</section>
