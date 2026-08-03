@@ -26,6 +26,8 @@ export class ProfileComponent implements OnInit {
   name = '';
   currentPassword = '';
   newPassword = '';
+  showCurrentPassword = false;
+  showNewPassword = false;
   avatarPreview: string | null = null;
   avatarChanged = false;
   avatarError = '';

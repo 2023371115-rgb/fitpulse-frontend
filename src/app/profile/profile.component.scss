@@ -160,6 +160,37 @@
     &:disabled { opacity: .45; cursor: not-allowed; }
   }
 }
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 4.75rem;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  right: .45rem;
+  min-width: 3.65rem;
+  min-height: 2rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-surface) 90%, var(--color-background));
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+  }
+}
  
 .divider {
   height: 1px;
@@ -316,5 +347,9 @@
   .btn-logout {
     width: 100%;
     min-height: 44px;
+  }
+
+  .password-field input {
+    padding-right: 4.5rem;
   }
 }

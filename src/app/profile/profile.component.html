@@ -50,11 +50,21 @@
 
         <div class="field">
           <label>Contraseña actual</label>
-          <input type="password" [(ngModel)]="currentPassword" placeholder="Contraseña de esta cuenta" autocomplete="current-password" autocapitalize="off" spellcheck="false" />
+          <div class="password-field">
+            <input [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword" placeholder="Contraseña de esta cuenta" autocomplete="current-password" autocapitalize="off" spellcheck="false" />
+            <button type="button" class="password-toggle" (click)="showCurrentPassword = !showCurrentPassword" [attr.aria-label]="showCurrentPassword ? 'Ocultar contraseña actual' : 'Mostrar contraseña actual'">
+              {{ showCurrentPassword ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
         </div>
         <div class="field">
           <label>Nueva contraseña</label>
-          <input type="password" [(ngModel)]="newPassword" placeholder="Mínimo 8 caracteres" autocomplete="new-password" autocapitalize="off" spellcheck="false" />
+          <div class="password-field">
+            <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="Mínimo 8 caracteres" autocomplete="new-password" autocapitalize="off" spellcheck="false" />
+            <button type="button" class="password-toggle" (click)="showNewPassword = !showNewPassword" [attr.aria-label]="showNewPassword ? 'Ocultar nueva contraseña' : 'Mostrar nueva contraseña'">
+              {{ showNewPassword ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
         </div>
 
         <div class="profile-actions">
