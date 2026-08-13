@@ -57,6 +57,7 @@
     <button class="btn-dashboard" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
     <button class="btn-dashboard" (click)="openTvMode()">Modo TV</button>
     <button class="btn-logout" (click)="openTerms()">Términos</button>
+    <button class="btn-dashboard" *ngIf="isSuperAdmin" (click)="openAdmin()">Admin</button>
 
     <!-- BOTÓN PERFIL -->
     <button class="btn-logout" (click)="openProfile()" title="Mi perfil">Mi perfil</button>
@@ -200,6 +201,7 @@
 
 <!-- PANEL DE PERFIL -->
 <app-profile *ngIf="showProfile" (close)="closeProfile()"></app-profile>
+<app-admin-panel *ngIf="showAdmin" (close)="closeAdmin()"></app-admin-panel>
 <app-terms-modal *ngIf="showTerms" (close)="closeTerms()"></app-terms-modal>
 
 </ng-container>

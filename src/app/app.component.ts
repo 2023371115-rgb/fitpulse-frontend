@@ -2,7 +2,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { VirtualFolderComponent } from './virtual-folder/virtual-folder.component';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { environment } from '../environments/environment';
 
 interface Theme {
@@ -53,6 +53,7 @@ export class AppComponent implements OnDestroy {
   externalType: 'web' | 'image' = 'web';
   showDashboard = false;
   showProfile = false;
+  showAdmin = false;
   showTerms = false;
   menuOpen = false;
   searchPanelOpen = false;
@@ -62,6 +63,8 @@ export class AppComponent implements OnDestroy {
   importText = '';
   themeMessage = '';
   tvMode = new URLSearchParams(window.location.search).get('tv') === '1';
+  currentUserName = '';
+  private authSub?: Subscription;
   
   readonly themes: Theme[] = [
     {
@@ -229,10 +232,22 @@ export class AppComponent implements OnDestroy {
 
     const saved = localStorage.getItem('sk_theme');
     this.applyTheme(saved || 'vital-fit');
+    this.authSub = this.isAuthenticated$.subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        this.loadCurrentUser();
+      } else {
+        this.currentUserName = '';
+      }
+    });
+  }
+
+  get isSuperAdmin(): boolean {
+    return this.currentUserName.trim().toLowerCase() === 'superadmin';
   }
 
   ngOnDestroy() {
     document.body.classList.remove('modal-open');
+    this.authSub?.unsubscribe();
   }
 
   toggleThemePicker() {
@@ -254,6 +269,18 @@ export class AppComponent implements OnDestroy {
 
   closeProfile() {
     this.showProfile = false;
+    this.loadCurrentUser();
+    this.syncModalScroll();
+  }
+
+  openAdmin() {
+    this.showAdmin = true;
+    this.menuOpen = false;
+    this.syncModalScroll();
+  }
+
+  closeAdmin() {
+    this.showAdmin = false;
     this.syncModalScroll();
   }
 
@@ -547,7 +574,15 @@ export class AppComponent implements OnDestroy {
     }).subscribe({ error: () => void 0 });
   }
 
+  private loadCurrentUser() {
+    if (!this.authService.getToken()) return;
+    this.http.get<{ user: { name?: string | null } }>(`${environment.apiUrl}/profile`).subscribe({
+      next: (res) => this.currentUserName = res.user?.name || '',
+      error: () => this.currentUserName = ''
+    });
+  }
+
   private syncModalScroll() {
-    document.body.classList.toggle('modal-open', this.showThemePicker || this.showProfile || this.showTerms);
+    document.body.classList.toggle('modal-open', this.showThemePicker || this.showProfile || this.showAdmin || this.showTerms);
   }
 }

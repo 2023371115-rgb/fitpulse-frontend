@@ -15,6 +15,7 @@ import { AuthInterceptor } from './auth.interceptor';
 import { GoalsSessionsComponent } from './goals-sessions/goals-sessions.component';
 import { TvDashboardComponent } from './tv-dashboard/tv-dashboard.component';
 import { TermsModalComponent } from './terms-modal/terms-modal.component';
+import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { TermsModalComponent } from './terms-modal/terms-modal.component';
     GoalsSessionsComponent,
     ProfileComponent,
     TvDashboardComponent,
-    TermsModalComponent
+    TermsModalComponent,
+    AdminPanelComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,47 @@
+<div class="admin-overlay" (click)="close.emit()">
+  <section class="admin-panel" (click)="$event.stopPropagation()">
+    <header class="admin-header">
+      <div>
+        <span>Panel admin</span>
+        <small>Gestion de cuentas de usuarios</small>
+      </div>
+      <button type="button" class="icon-button" (click)="close.emit()" aria-label="Cerrar">x</button>
+    </header>
+
+    <div *ngIf="loading" class="admin-state">Cargando usuarios...</div>
+    <div *ngIf="!loading && errorMsg" class="msg error">{{ errorMsg }}</div>
+    <div *ngIf="successMsg" class="msg success">{{ successMsg }}</div>
+
+    <div class="users-table" *ngIf="!loading && users.length">
+      <div class="table-row table-head">
+        <span>Usuario</span>
+        <span>Alta</span>
+        <span>Estado</span>
+        <span>Accion</span>
+      </div>
+
+      <div class="table-row" *ngFor="let user of users">
+        <div class="user-cell">
+          <strong>{{ user.name || 'Sin nombre' }}</strong>
+          <small>{{ user.email }}</small>
+        </div>
+        <span>{{ createdLabel(user) }}</span>
+        <span class="status-pill" [class.off]="!isActive(user)">
+          {{ isActive(user) ? 'Activo' : 'Deshabilitado' }}
+        </span>
+        <button
+          type="button"
+          class="admin-action"
+          [class.danger]="isActive(user)"
+          [disabled]="savingId === user.id || isSuperAdmin(user)"
+          (click)="toggleUser(user)">
+          {{ savingId === user.id ? 'Guardando...' : (isActive(user) ? 'Deshabilitar' : 'Habilitar') }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !users.length && !errorMsg" class="admin-state">
+      No hay usuarios registrados.
+    </div>
+  </section>
+</div>
