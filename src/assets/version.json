@@ -1,0 +1,7 @@
+{
+  "name": "FitPulse Health Lab",
+  "version": "1.0.0",
+  "stage": "stable",
+  "releasedAt": "2026-08-13",
+  "backend": "https://fitpulse-backend-r77o.onrender.com"
+}

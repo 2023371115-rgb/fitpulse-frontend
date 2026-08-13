@@ -48,6 +48,28 @@ http://localhost:4200?tv=1
 npm run build
 ```
 
+## Version estable
+
+La version estable para entrega es `1.0.0`.
+
+Evidencia local del frontend:
+
+```text
+src/assets/version.json
+```
+
+Evidencia desplegada esperada:
+
+```text
+/assets/version.json
+```
+
+Checklist de display y responsividad:
+
+```text
+docs/responsive-display.md
+```
+
 ## Entrega academica
 
 Este repo cubre la parte web: maquetacion, contenido dinamico, buscador, popups,
