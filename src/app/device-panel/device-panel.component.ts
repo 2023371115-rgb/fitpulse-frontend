@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FileMetadata } from '../files.service';
 import { AuthService } from '../auth.service';
@@ -26,7 +26,7 @@ interface LatestMetric {
   styleUrls: ['./device-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DevicePanelComponent implements OnChanges, OnInit {
+export class DevicePanelComponent implements OnChanges, OnDestroy, OnInit {
   /** Lista de archivos actuales del Sketchbook, usada para calcular estadísticas */
   @Input() files: FileMetadata[] = [];
 
@@ -49,6 +49,7 @@ export class DevicePanelComponent implements OnChanges, OnInit {
   generatingCode = false;
 
   private base = `${environment.apiUrl}/devices`;
+  private poll?: number;
 
   constructor(
     private http: HttpClient,
@@ -58,27 +59,37 @@ export class DevicePanelComponent implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.loadDevices();
+    this.poll = window.setInterval(() => {
+      if (this.auth.getToken()) this.loadDevices(false);
+    }, 3500);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['files']) this.calcStats();
   }
 
+  ngOnDestroy(): void {
+    if (this.poll) window.clearInterval(this.poll);
+  }
+
   private headers(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken() ?? ''}` });
   }
 
-  loadDevices(): void {
+  loadDevices(showErrors = true): void {
     this.http.get<DeviceEntry[]>(this.base, { headers: this.headers() }).subscribe({
       next: devs => {
         this.devices = devs;
-        if (!this.selectedDeviceId && devs.length) {
+        if ((!this.selectedDeviceId || !devs.some(d => d.id === this.selectedDeviceId)) && devs.length) {
           this.selectedDeviceId = devs[0].id;
         }
         this.cdr.markForCheck();
         devs.forEach(d => this.loadLatestMetric(d.id));
       },
-      error: () => this.pairingLog.unshift(`[${this.now()}] Error al cargar dispositivos`)
+      error: () => {
+        if (showErrors) this.pairingLog.unshift(`[${this.now()}] Error al cargar dispositivos`);
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -87,10 +98,19 @@ export class DevicePanelComponent implements OnChanges, OnInit {
       .get<LatestMetric | null>(`${this.base}/${deviceId}/metrics/latest`, { headers: this.headers() })
       .subscribe({
         next: m => {
-          if (m) this.latestMetrics[deviceId] = m;
+          if (m) {
+            this.latestMetrics[deviceId] = m;
+          } else {
+            delete this.latestMetrics[deviceId];
+          }
           this.cdr.markForCheck();
         }
       });
+  }
+
+  togglePanel(): void {
+    this.panelOpen = !this.panelOpen;
+    if (this.panelOpen) this.loadDevices(false);
   }
 
   private calcStats(): void {
@@ -186,6 +206,8 @@ export class DevicePanelComponent implements OnChanges, OnInit {
           });
           this.pairingLog.unshift(`[${this.now()}] Codigo ${res.code} generado para ${dev.name}`);
           this.generatingCode = false;
+          this.selectedDeviceId = dev.id;
+          this.loadDevices(false);
           this.cdr.markForCheck();
         },
         error: () => {

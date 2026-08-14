@@ -31,12 +31,12 @@
   position: fixed;
   right: 24px;
   bottom: 72px;
-  width: 340px;
+  width: 380px;
   max-height: 80vh;
   overflow-y: auto;
   background: var(--color-surface);
   border: 1px solid var(--color-border-strong);
-  border-radius: 14px;
+  border-radius: 10px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.14);
   display: none;
   flex-direction: column;
@@ -51,7 +51,7 @@
   padding: 14px 16px 10px;
   border-bottom: 1px solid var(--color-border);
 }
-.dp-title { font-size: 15px; font-weight: 600; color: var(--color-text); }
+.dp-title { font-size: 15px; font-weight: 800; color: var(--color-text); }
 .dp-close {
   background: none;
   border: none;
@@ -73,16 +73,18 @@
 /* Estadísticas */
 .dp-stats { padding: 14px 16px; border-bottom: 1px solid var(--color-border); }
 .dp-stats-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 .dp-stat-card {
-  flex: 1 1 70px;
   background: color-mix(in srgb, var(--color-background) 78%, var(--color-surface));
   border-radius: 8px;
+  min-height: 64px;
   padding: 10px 8px;
   text-align: center;
+  display: grid;
+  align-content: center;
 }
 .dp-stat-value { display: block; font-size: 18px; font-weight: 700; color: var(--color-primary); }
 .dp-stat-label { display: block; font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
@@ -111,6 +113,7 @@
 .dp-device-item {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 10px 12px;
   border: 1.5px solid var(--color-border-strong);
@@ -166,6 +169,28 @@
   padding: 4px 10px;
 }
 
+.dp-hint {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.dp-metrics {
+  padding: 14px 16px 16px;
+}
+
+.dp-metrics .dp-stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dp-metric-time {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
 .dp-pair-code {
   display: grid;
   place-items: center;
@@ -207,5 +232,14 @@
     bottom: 66px;
     width: auto;
     max-height: min(74vh, 620px);
+  }
+
+  .dp-stats-grid,
+  .dp-metrics .dp-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dp-create-grid {
+    grid-template-columns: 1fr;
   }
 }

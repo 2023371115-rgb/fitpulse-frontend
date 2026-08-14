@@ -222,6 +222,14 @@ export class AppComponent implements OnDestroy {
     private http: HttpClient
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
+    this.authSub = this.isAuthenticated$.subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        this.loadCurrentUser();
+      } else {
+        this.currentUserName = '';
+      }
+    });
+
     const savedCustom = this.readSavedCustomTheme();
     if (savedCustom) {
       this.customTheme = savedCustom;
@@ -232,13 +240,6 @@ export class AppComponent implements OnDestroy {
 
     const saved = localStorage.getItem('sk_theme');
     this.applyTheme(saved || 'vital-fit');
-    this.authSub = this.isAuthenticated$.subscribe(isAuthenticated => {
-      if (isAuthenticated) {
-        this.loadCurrentUser();
-      } else {
-        this.currentUserName = '';
-      }
-    });
   }
 
   get isSuperAdmin(): boolean {
