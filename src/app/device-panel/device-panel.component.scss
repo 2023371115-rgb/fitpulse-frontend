@@ -158,6 +158,37 @@
 .dp-btn--secondary:hover { border-color: var(--color-primary); color: var(--color-primary-dark); }
 .dp-btn--unlink { background: #fee2e2; color: #991b1b; font-size: 12px; padding: 4px 10px; }
 .dp-btn--unlink:hover { background: #fecaca; }
+.dp-btn--code {
+  border: 1px solid var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.dp-pair-code {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  margin: 10px 0 12px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  text-align: center;
+}
+
+.dp-pair-code span,
+.dp-pair-code small {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.dp-pair-code strong {
+  color: var(--color-text);
+  font-size: 28px;
+  letter-spacing: .18em;
+}
 
 /* Log */
 .dp-log { padding: 14px 16px; }

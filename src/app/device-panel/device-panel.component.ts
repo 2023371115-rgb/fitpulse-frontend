@@ -43,6 +43,10 @@ export class DevicePanelComponent implements OnChanges, OnInit {
   pairingLog: string[] = [];
   panelOpen = false;
   latestMetrics: { [deviceId: string]: LatestMetric } = {};
+  pairingCode = '';
+  pairingCodeDevice = '';
+  pairingExpiresAt = '';
+  generatingCode = false;
 
   private base = `${environment.apiUrl}/devices`;
 
@@ -159,6 +163,34 @@ export class DevicePanelComponent implements OnChanges, OnInit {
         error: () => {
           dev.status = 'error';
           this.pairingLog.unshift(`[${this.now()}] Error al enlazar "${dev.name}"`);
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  generateWearCode(dev: DeviceEntry): void {
+    this.generatingCode = true;
+    this.pairingCode = '';
+    this.pairingCodeDevice = dev.name;
+    this.pairingExpiresAt = '';
+    this.cdr.markForCheck();
+
+    this.http
+      .post<{ code: string; expiresAt: string }>(`${this.base}/${dev.id}/pairing-code`, {}, { headers: this.headers() })
+      .subscribe({
+        next: res => {
+          this.pairingCode = res.code;
+          this.pairingExpiresAt = new Date(res.expiresAt).toLocaleTimeString('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          this.pairingLog.unshift(`[${this.now()}] Codigo ${res.code} generado para ${dev.name}`);
+          this.generatingCode = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.pairingLog.unshift(`[${this.now()}] Error al generar codigo para reloj`);
+          this.generatingCode = false;
           this.cdr.markForCheck();
         }
       });

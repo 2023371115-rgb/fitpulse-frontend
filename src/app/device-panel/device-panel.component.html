@@ -82,7 +82,16 @@
         </span>
         <button *ngIf="dev.status === 'linked'" class="dp-btn dp-btn--unlink"
                 (click)="$event.stopPropagation(); unlinkDevice(dev)">Desenlazar</button>
+        <button *ngIf="dev.type === 'wearable'" class="dp-btn dp-btn--code"
+                [disabled]="generatingCode"
+                (click)="$event.stopPropagation(); generateWearCode(dev)">Código</button>
       </div>
+    </div>
+
+    <div class="dp-pair-code" *ngIf="pairingCode">
+      <span>Escribe este codigo en el reloj</span>
+      <strong>{{ pairingCode }}</strong>
+      <small>{{ pairingCodeDevice }} · vence {{ pairingExpiresAt }}</small>
     </div>
 
     <div class="dp-actions">
