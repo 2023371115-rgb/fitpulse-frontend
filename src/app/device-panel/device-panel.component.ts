@@ -230,6 +230,32 @@ export class DevicePanelComponent implements OnChanges, OnDestroy, OnInit {
       });
   }
 
+  deleteDevice(dev: DeviceEntry): void {
+    const ok = window.confirm(`Eliminar "${dev.name}" y sus metricas registradas?`);
+    if (!ok) return;
+
+    this.http.delete(`${this.base}/${dev.id}`, { headers: this.headers() }).subscribe({
+      next: () => {
+        this.devices = this.devices.filter(d => d.id !== dev.id);
+        delete this.latestMetrics[dev.id];
+        if (this.selectedDeviceId === dev.id) {
+          this.selectedDeviceId = this.devices[0]?.id ?? null;
+        }
+        if (this.pairingCodeDevice === dev.name) {
+          this.pairingCode = '';
+          this.pairingCodeDevice = '';
+          this.pairingExpiresAt = '';
+        }
+        this.pairingLog.unshift(`[${this.now()}] "${dev.name}" eliminado`);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.pairingLog.unshift(`[${this.now()}] Error al eliminar "${dev.name}"`);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   trackById(_: number, d: DeviceEntry) { return d.id; }
 
   private now(): string {

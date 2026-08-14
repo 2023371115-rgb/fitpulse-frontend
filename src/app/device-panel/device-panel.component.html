@@ -87,6 +87,9 @@
                 (click)="$event.stopPropagation(); generateWearCode(dev)">
           Código
         </button>
+        <button class="dp-btn dp-btn--delete"
+                title="Eliminar dispositivo"
+                (click)="$event.stopPropagation(); deleteDevice(dev)">Eliminar</button>
       </div>
     </div>
 
