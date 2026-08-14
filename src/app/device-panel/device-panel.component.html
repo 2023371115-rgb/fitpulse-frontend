@@ -82,10 +82,10 @@
         </span>
         <button *ngIf="dev.status === 'linked'" class="dp-btn dp-btn--unlink"
                 (click)="$event.stopPropagation(); unlinkDevice(dev)">Desenlazar</button>
-        <button *ngIf="dev.type === 'wearable'" class="dp-btn dp-btn--code"
+        <button *ngIf="dev.type === 'wearable' && dev.status !== 'linked'" class="dp-btn dp-btn--code"
                 [disabled]="generatingCode"
                 (click)="$event.stopPropagation(); generateWearCode(dev)">
-          {{ dev.status === 'linked' ? 'Reenlazar' : 'Código' }}
+          Código
         </button>
       </div>
     </div>
@@ -97,7 +97,7 @@
     </div>
 
     <p class="dp-hint" *ngIf="devices.length > 0">
-      Usa <b>Codigo</b> para conectar un reloj nuevo. Si ya esta enlazado, las metricas se actualizan solas.
+      Usa <b>Codigo</b> para conectar un reloj nuevo. Para cambiar de reloj, primero desenlaza el actual.
     </p>
   </section>
 
