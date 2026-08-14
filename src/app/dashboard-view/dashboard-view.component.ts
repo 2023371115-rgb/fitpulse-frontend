@@ -1,12 +1,29 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../auth.service';
+import { environment } from '../../environments/environment';
+
+interface DeviceEntry {
+  id: string;
+  name: string;
+  type: 'smarttv' | 'wearable' | 'phone' | 'other';
+  status: 'idle' | 'linked' | 'offline';
+}
+
+interface LatestMetric {
+  heart_rate: number | null;
+  steps: number | null;
+  spo2: number | null;
+  temperature: number | string | null;
+  recorded_at: string;
+}
 
 @Component({
   selector: 'app-dashboard-view',
   templateUrl: './dashboard-view.component.html',
   styleUrls: ['./dashboard-view.component.scss'],
 })
-export class DashboardViewComponent implements OnChanges {
+export class DashboardViewComponent implements OnInit, OnDestroy {
   @Input() theme?: {
     primary?: string;
     accent?: string;
@@ -14,57 +31,92 @@ export class DashboardViewComponent implements OnChanges {
     surface?: string;
   };
 
-  flutterUrl: SafeResourceUrl;
-  themeKey = '';
+  devices: DeviceEntry[] = [];
+  latestMetric: LatestMetric | null = null;
+  selectedDevice: DeviceEntry | null = null;
+  loading = true;
+  lastSync = '';
+  private poll?: number;
+  private readonly base = `${environment.apiUrl}/devices`;
 
-  constructor(private sanitizer: DomSanitizer) {
-    this.flutterUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      this.buildFlutterUrl()
-    );
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDashboard();
+    this.poll = window.setInterval(() => this.loadDashboard(false), 3500);
   }
 
-  ngOnChanges() {
-    const nextUrl = this.buildFlutterUrl();
-    this.themeKey = nextUrl;
-    this.flutterUrl = this.sanitizer.bypassSecurityTrustResourceUrl(nextUrl);
+  ngOnDestroy(): void {
+    if (this.poll) window.clearInterval(this.poll);
   }
 
-  private buildFlutterUrl() {
-    const theme = this.theme || {};
-    const background = this.safeHex(theme.background, this.cssVar('--color-background', '#F5FAF7'));
-    const text = this.readableTextFor(background);
-    const params = new URLSearchParams({
-      primary: this.safeHex(theme.primary, this.cssVar('--color-primary', '#0F9D58')),
-      accent: this.safeHex(theme.accent, this.cssVar('--color-accent', '#B7F51B')),
-      background,
-      surface: this.safeHex(theme.surface, this.cssVar('--color-surface', '#FFFFFF')),
-      text,
-      muted: this.isDark(background) ? '#CBD5E1' : '#64748B',
-      border: this.isDark(background) ? '#334155' : '#CBD5E1',
+  get linkedCount(): number {
+    return this.devices.filter(device => device.status === 'linked').length;
+  }
+
+  get wearableCount(): number {
+    return this.devices.filter(device => device.type === 'wearable').length;
+  }
+
+  get heartRate(): string {
+    return this.latestMetric?.heart_rate != null ? `${this.latestMetric.heart_rate} lpm` : 'Sin dato';
+  }
+
+  get steps(): string {
+    return this.latestMetric?.steps != null ? `${this.latestMetric.steps}` : 'Sin dato';
+  }
+
+  get spo2(): string {
+    return this.latestMetric?.spo2 != null ? `${this.latestMetric.spo2}%` : 'Sin dato';
+  }
+
+  get temperature(): string {
+    return this.latestMetric?.temperature != null ? `${this.latestMetric.temperature}°C` : 'Sin dato';
+  }
+
+  private headers(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken() ?? ''}` });
+  }
+
+  private loadDashboard(showLoader = true): void {
+    if (showLoader) this.loading = true;
+    this.http.get<DeviceEntry[]>(this.base, { headers: this.headers() }).subscribe({
+      next: devices => {
+        this.devices = devices;
+        this.selectedDevice = devices.find(device => device.type === 'wearable')
+          || devices.find(device => device.status === 'linked')
+          || devices[0]
+          || null;
+
+        if (this.selectedDevice) {
+          this.loadLatestMetric(this.selectedDevice.id);
+        } else {
+          this.latestMetric = null;
+          this.loading = false;
+          this.lastSync = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.latestMetric = null;
+      }
     });
-
-    return `assets/flutter_dashboard/index.html?${params.toString()}`;
   }
 
-  private cssVar(name: string, fallback: string) {
-    if (typeof window === 'undefined') return fallback;
-    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-    return value || fallback;
-  }
-
-  private safeHex(value: unknown, fallback: string) {
-    return typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value) ? value.toUpperCase() : fallback;
-  }
-
-  private readableTextFor(hex: string) {
-    return this.isDark(hex) ? '#F8FAFC' : '#0F172A';
-  }
-
-  private isDark(hex: string) {
-    const color = hex.replace('#', '');
-    const red = parseInt(color.slice(0, 2), 16);
-    const green = parseInt(color.slice(2, 4), 16);
-    const blue = parseInt(color.slice(4, 6), 16);
-    return (red * 299 + green * 587 + blue * 114) / 1000 < 140;
+  private loadLatestMetric(deviceId: string): void {
+    this.http.get<LatestMetric | null>(`${this.base}/${deviceId}/metrics/latest`, { headers: this.headers() }).subscribe({
+      next: metric => {
+        this.latestMetric = metric;
+        this.loading = false;
+        this.lastSync = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      },
+      error: () => {
+        this.loading = false;
+        this.latestMetric = null;
+      }
+    });
   }
 }

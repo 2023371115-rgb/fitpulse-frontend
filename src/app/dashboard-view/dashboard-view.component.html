@@ -1,19 +1,57 @@
 <div class="dash-shell">
   <div class="dash-head">
     <div>
-      <h2>Centro de Dispositivos</h2>
-      <p>Panel de salud y actividad fisica enlazado con tu estilo personalizado.</p>
+      <h2>Centro de salud conectado</h2>
+      <p>Resumen vivo de los dispositivos enlazados desde el panel flotante.</p>
     </div>
-    <span class="dash-badge">FitPulse Health</span>
+    <span class="dash-badge">{{ selectedDevice?.name || 'Sin wearable' }}</span>
   </div>
 
-  <div class="dash-container">
-    <iframe
-      [src]="flutterUrl"
-      class="dash-frame"
-      allow="accelerometer; gyroscope"
-      [attr.data-theme-key]="themeKey"
-      title="FitPulse Health Dashboard"
-    ></iframe>
-  </div>
+  <section class="dash-container">
+    <div class="dash-status">
+      <div>
+        <strong>{{ loading ? 'Sincronizando...' : 'Datos de FitPulse' }}</strong>
+        <span>{{ selectedDevice ? 'Fuente: ' + selectedDevice.name : 'Registra un wearable desde Dispositivos.' }}</span>
+      </div>
+      <small>{{ lastSync ? 'Actualizado ' + lastSync : 'Esperando datos' }}</small>
+    </div>
+
+    <div class="metrics-grid">
+      <article class="metric-card heart">
+        <span>Frecuencia cardiaca</span>
+        <strong>{{ heartRate }}</strong>
+        <small>{{ latestMetric ? 'Dato enviado por wearable' : 'Toca Pulso en el reloj' }}</small>
+      </article>
+      <article class="metric-card">
+        <span>Pasos</span>
+        <strong>{{ steps }}</strong>
+        <small>{{ latestMetric ? 'Actividad sincronizada' : 'Toca Pasos en el reloj' }}</small>
+      </article>
+      <article class="metric-card">
+        <span>SpO₂</span>
+        <strong>{{ spo2 }}</strong>
+        <small>Lectura complementaria</small>
+      </article>
+      <article class="metric-card">
+        <span>Temperatura</span>
+        <strong>{{ temperature }}</strong>
+        <small>Dato corporal demo</small>
+      </article>
+    </div>
+
+    <div class="device-summary">
+      <div>
+        <strong>{{ devices.length }}</strong>
+        <span>Registrados</span>
+      </div>
+      <div>
+        <strong>{{ linkedCount }}</strong>
+        <span>Enlazados</span>
+      </div>
+      <div>
+        <strong>{{ wearableCount }}</strong>
+        <span>Wearables</span>
+      </div>
+    </div>
+  </section>
 </div>
