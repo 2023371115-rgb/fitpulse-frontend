@@ -3,10 +3,49 @@
     <header class="admin-header">
       <div>
         <span>Panel admin</span>
-        <small>Gestion de cuentas de usuarios</small>
+        <small>Cuentas de usuarios y reportes de fallos</small>
       </div>
       <button type="button" class="icon-button" (click)="close.emit()" aria-label="Cerrar">x</button>
     </header>
+
+    <nav class="admin-tabs">
+      <button type="button" [class.active]="tab === 'users'" (click)="tab = 'users'">Usuarios</button>
+      <button type="button" [class.active]="tab === 'tickets'" (click)="showTickets()">
+        Reportes de fallos <span *ngIf="ticketCounts['open']">{{ ticketCounts['open'] }}</span>
+      </button>
+    </nav>
+
+    <ng-container *ngIf="tab === 'tickets'">
+      <div *ngIf="errorMsg" class="msg error">{{ errorMsg }}</div>
+      <div *ngIf="successMsg" class="msg success">{{ successMsg }}</div>
+      <div class="ticket-filters">
+        <select [(ngModel)]="ticketFilter" (change)="loadTickets()" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }} ({{ ticketCounts[s.value] || 0 }})</option>
+        </select>
+      </div>
+      <div *ngIf="ticketsLoading" class="admin-state">Cargando reportes…</div>
+      <div *ngIf="!ticketsLoading && !tickets.length" class="admin-state">No hay reportes con ese filtro.</div>
+      <article class="admin-ticket" *ngFor="let t of tickets">
+        <div class="admin-ticket-top">
+          <strong>{{ t.code }} · {{ t.title }}</strong>
+          <span class="sev" [ngClass]="'sev-' + t.severity">{{ severityLabel(t.severity) }}</span>
+        </div>
+        <small>{{ t.user_name || 'Usuario' }} ({{ t.user_email || 'cuenta eliminada' }}) · {{ categoryLabel(t.category) }} · {{ t.screen || '-' }} · {{ t.platform || '-' }} · {{ t.created_at | date:'dd MMM yyyy, HH:mm' }}</small>
+        <p>{{ t.description }}</p>
+        <div class="admin-ticket-actions">
+          <input [(ngModel)]="notes[t.id]" placeholder="Nota para el usuario (opcional)" maxlength="2000" />
+          <select #st aria-label="Estado">
+            <option *ngFor="let s of statusOptions" [value]="s.value" [selected]="s.value === t.status">{{ s.label }}</option>
+          </select>
+          <button type="button" class="admin-action" [disabled]="savingId === t.id" (click)="updateTicket(t, st.value)">
+            {{ savingId === t.id ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </article>
+    </ng-container>
+
+    <ng-container *ngIf="tab === 'users'">
 
     <div *ngIf="loading" class="admin-state">Cargando usuarios...</div>
     <div *ngIf="!loading && errorMsg" class="msg error">{{ errorMsg }}</div>
@@ -43,5 +82,6 @@
     <div *ngIf="!loading && !users.length && !errorMsg" class="admin-state">
       No hay usuarios registrados.
     </div>
+      </ng-container>
   </section>
 </div>

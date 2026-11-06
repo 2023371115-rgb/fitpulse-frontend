@@ -20,12 +20,13 @@
         type="search"
         [(ngModel)]="searchQuery"
         (keyup.enter)="onSearch()"
-        placeholder="Buscar ejercicios, dispositivos..."
-        aria-label="Buscar ejercicios, dispositivos o archivos"
+        placeholder="Buscar sesiones, metas, reportes..."
+        aria-label="Buscar sesiones, metas, dispositivos, reportes o archivos"
       />
       <select [(ngModel)]="searchMode" aria-label="Modo de búsqueda" class="search-mode">
-        <option value="internal">Interno</option>
-        <option value="external">Externo</option>
+        <option value="internal">FitPulse</option>
+        <option value="files">Archivos</option>
+        <option value="external">Web</option>
       </select>
       <select *ngIf="searchMode === 'external'" [(ngModel)]="externalType" aria-label="Tipo de búsqueda externa" class="search-subtype">
         <option value="web">Web</option>
@@ -56,6 +57,7 @@
     </div>
     <button class="btn-dashboard" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
     <button class="btn-dashboard" (click)="openTvMode()">Modo TV</button>
+    <button class="btn-dashboard" (click)="openTickets()">Reportar fallo</button>
     <button class="btn-logout" (click)="openTerms()">Términos</button>
     <button class="btn-dashboard" *ngIf="isSuperAdmin" (click)="openAdmin()">Admin</button>
 
@@ -187,12 +189,13 @@
   <section class="search-results-panel" [class.is-visible]="searchPanelOpen">
     <div class="search-results-head">
       <div>
-        <strong>{{ searchMode === 'external' ? 'Resultados externos' : 'Resultados internos' }}</strong>
-        <span>{{ searchQuery ? 'Busqueda: ' + searchQuery : 'Busca archivos guardados o resultados web.' }}</span>
+        <strong>{{ searchMode === 'external' ? 'Resultados en la web' : searchMode === 'files' ? 'Archivos' : 'Resultados en FitPulse' }}</strong>
+        <span>{{ searchQuery ? 'Busqueda: ' + searchQuery : 'Busca sesiones, metas, reportes, archivos o resultados web.' }}</span>
       </div>
       <button class="btn-clear" *ngIf="searchPanelOpen" (click)="clearSearch()">Cerrar</button>
     </div>
-    <app-virtual-folder></app-virtual-folder>
+    <app-smart-search [hidden]="searchMode !== 'internal'" (openSection)="openFromSearch($event)" (useSuggestion)="searchQuery = $event; onSearch()"></app-smart-search>
+    <app-virtual-folder [hidden]="searchMode === 'internal'"></app-virtual-folder>
   </section>
   <app-goals-sessions></app-goals-sessions>
 </main>
@@ -204,5 +207,6 @@
 <app-profile *ngIf="showProfile" (close)="closeProfile()"></app-profile>
 <app-admin-panel *ngIf="showAdmin" (close)="closeAdmin()"></app-admin-panel>
 <app-terms-modal *ngIf="showTerms" (close)="closeTerms()"></app-terms-modal>
+<app-tickets *ngIf="showTickets" (close)="closeTickets()"></app-tickets>
 
 </ng-container>

@@ -1,0 +1,22 @@
+.ticket-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 1.2rem; }
+.ticket-form label { display: grid; gap: .3rem; font-size: .8rem; color: var(--color-text-muted); }
+.ticket-form .wide { grid-column: 1 / -1; }
+.ticket-form input, .ticket-form select, .ticket-form textarea {
+  width: 100%; box-sizing: border-box; padding: .6rem .7rem; font: inherit; font-size: .9rem;
+  border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm);
+  background: var(--color-background); color: var(--color-text);
+}
+.ticket-form textarea { resize: vertical; }
+.actions { display: flex; justify-content: flex-end; }
+.section-title { margin: .5rem 0 .6rem; font-size: 1rem; }
+.ticket-list { display: grid; gap: .6rem; }
+.ticket-card { padding: .8rem .9rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-background); }
+.ticket-card small { color: var(--color-text-muted); }
+.ticket-card p { margin: .4rem 0 0; font-size: .88rem; white-space: pre-wrap; }
+.ticket-top { display: flex; justify-content: space-between; gap: .6rem; align-items: center; }
+.admin-note { color: var(--color-primary-dark); font-weight: 600; }
+.status-pill.st-open { background: rgba(249, 115, 22, .14); color: #c2410c; }
+.status-pill.st-in_progress { background: rgba(59, 130, 246, .14); color: #1d4ed8; }
+.status-pill.st-resolved { background: rgba(34, 197, 94, .14); color: #15803d; }
+.status-pill.st-closed { background: rgba(100, 116, 139, .14); color: #475569; }
+@media (max-width: 640px) { .ticket-form { grid-template-columns: 1fr; } }

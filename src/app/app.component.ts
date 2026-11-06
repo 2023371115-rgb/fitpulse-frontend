@@ -2,6 +2,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { VirtualFolderComponent } from './virtual-folder/virtual-folder.component';
+import { SmartSearchComponent } from './smart-search/smart-search.component';
 import { Observable, Subscription } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -48,13 +49,15 @@ interface ThemeDraft {
 })
 export class AppComponent implements OnDestroy {
   @ViewChild(VirtualFolderComponent) virtualFolder?: VirtualFolderComponent;
+  @ViewChild(SmartSearchComponent) smartSearch?: SmartSearchComponent;
   searchQuery = '';
-  searchMode: 'internal' | 'external' = 'internal';
+  searchMode: 'internal' | 'files' | 'external' = 'internal';
   externalType: 'web' | 'image' = 'web';
   showDashboard = false;
   showProfile = false;
   showAdmin = false;
   showTerms = false;
+  showTickets = false;
   menuOpen = false;
   searchPanelOpen = false;
   isAuthenticated$!: Observable<boolean>;  // ← solo declara el tipo
@@ -64,6 +67,7 @@ export class AppComponent implements OnDestroy {
   themeMessage = '';
   tvMode = new URLSearchParams(window.location.search).get('tv') === '1';
   currentUserName = '';
+  currentUserRole = '';
   private authSub?: Subscription;
   
   readonly themes: Theme[] = [
@@ -227,6 +231,7 @@ export class AppComponent implements OnDestroy {
         this.loadCurrentUser();
       } else {
         this.currentUserName = '';
+        this.currentUserRole = '';
       }
     });
 
@@ -242,8 +247,9 @@ export class AppComponent implements OnDestroy {
     this.applyTheme(saved || 'vital-fit');
   }
 
+  /** El panel admin se muestra según el rol que guarda el backend (users.role). */
   get isSuperAdmin(): boolean {
-    return this.currentUserName.trim().toLowerCase() === 'superadmin';
+    return this.currentUserRole === 'admin';
   }
 
   ngOnDestroy() {
@@ -283,6 +289,27 @@ export class AppComponent implements OnDestroy {
   closeAdmin() {
     this.showAdmin = false;
     this.syncModalScroll();
+  }
+
+  openTickets() {
+    this.showTickets = true;
+    this.menuOpen = false;
+    this.syncModalScroll();
+  }
+
+  closeTickets() {
+    this.showTickets = false;
+    this.syncModalScroll();
+  }
+
+  /** Al tocar un resultado del buscador se abre la sección correspondiente. */
+  openFromSearch(section: string) {
+    if (section === 'tickets') return this.isSuperAdmin ? this.openAdmin() : this.openTickets();
+    if (section === 'users') return this.openAdmin();
+    if (section === 'profile') return this.openProfile();
+    if (section === 'metrics' || section === 'home') { this.showDashboard = true; return; }
+    if (section === 'devices') { document.querySelector('app-device-panel')?.scrollIntoView({ behavior: 'smooth' }); return; }
+    document.querySelector('app-goals-sessions')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   openTerms() {
@@ -539,7 +566,11 @@ export class AppComponent implements OnDestroy {
   onSearch() {
     const query = this.searchQuery.trim();
     this.searchPanelOpen = !!query;
-    this.virtualFolder?.searchFiles(query, this.searchMode, this.externalType);
+    if (this.searchMode === 'internal') {
+      this.smartSearch?.run(query);
+    } else {
+      this.virtualFolder?.searchFiles(query, this.searchMode === 'files' ? 'internal' : 'external', this.externalType);
+    }
     if (query) {
       this.syncTv('devices', 3, `Busqueda desde telefono: ${query}`);
     }
@@ -548,7 +579,8 @@ export class AppComponent implements OnDestroy {
   clearSearch() {
     this.searchQuery = '';
     this.searchPanelOpen = false;
-    this.virtualFolder?.searchFiles('', this.searchMode, this.externalType);
+    this.smartSearch?.run('');
+    this.virtualFolder?.searchFiles('', this.searchMode === 'files' ? 'internal' : 'external', this.externalType);
   }
 
   openTvMode() {
@@ -577,13 +609,13 @@ export class AppComponent implements OnDestroy {
 
   private loadCurrentUser() {
     if (!this.authService.getToken()) return;
-    this.http.get<{ user: { name?: string | null } }>(`${environment.apiUrl}/profile`).subscribe({
-      next: (res) => this.currentUserName = res.user?.name || '',
-      error: () => this.currentUserName = ''
+    this.http.get<{ user: { name?: string | null; role?: string } }>(`${environment.apiUrl}/profile`).subscribe({
+      next: (res) => { this.currentUserName = res.user?.name || ''; this.currentUserRole = res.user?.role || ''; },
+      error: () => { this.currentUserName = ''; this.currentUserRole = ''; }
     });
   }
 
   private syncModalScroll() {
-    document.body.classList.toggle('modal-open', this.showThemePicker || this.showProfile || this.showAdmin || this.showTerms);
+    document.body.classList.toggle('modal-open', this.showThemePicker || this.showProfile || this.showAdmin || this.showTerms || this.showTickets);
   }
 }

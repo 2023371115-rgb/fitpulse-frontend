@@ -1,0 +1,62 @@
+<div class="admin-overlay" (click)="close.emit()">
+  <section class="admin-panel" (click)="$event.stopPropagation()">
+    <header class="admin-header">
+      <div>
+        <span>Reportar un fallo</span>
+        <small>Cuéntanos qué pasó; el equipo de FitPulse revisará tu reporte.</small>
+      </div>
+      <button type="button" class="icon-button" (click)="close.emit()" aria-label="Cerrar">x</button>
+    </header>
+
+    <div *ngIf="errorMsg" class="msg error">{{ errorMsg }}</div>
+    <div *ngIf="successMsg" class="msg success">{{ successMsg }}</div>
+
+    <form class="ticket-form" (ngSubmit)="submit()">
+      <label class="wide">
+        <span>Título</span>
+        <input name="title" [(ngModel)]="form.title" maxlength="140" placeholder="Ej. La gráfica de pasos no carga" />
+      </label>
+      <label>
+        <span>Tipo de fallo</span>
+        <select name="category" [(ngModel)]="form.category">
+          <option *ngFor="let c of categories" [value]="c.value">{{ c.label }}</option>
+        </select>
+      </label>
+      <label>
+        <span>Gravedad</span>
+        <select name="severity" [(ngModel)]="form.severity">
+          <option *ngFor="let s of severities" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </label>
+      <label>
+        <span>¿Dónde pasó?</span>
+        <select name="screen" [(ngModel)]="form.screen">
+          <option *ngFor="let s of screens" [value]="s">{{ s }}</option>
+        </select>
+      </label>
+      <label class="wide">
+        <span>Descripción</span>
+        <textarea name="description" [(ngModel)]="form.description" rows="4" maxlength="4000"
+                  placeholder="¿Qué hacías, qué esperabas y qué pasó?"></textarea>
+      </label>
+      <div class="wide actions">
+        <button type="submit" class="admin-action" [disabled]="sending">{{ sending ? 'Enviando…' : 'Enviar reporte' }}</button>
+      </div>
+    </form>
+
+    <h3 class="section-title">Mis reportes</h3>
+    <div *ngIf="loading" class="admin-state">Cargando…</div>
+    <div *ngIf="!loading && !tickets.length" class="admin-state">Aún no has enviado reportes.</div>
+    <div class="ticket-list">
+      <article *ngFor="let t of tickets" class="ticket-card">
+        <div class="ticket-top">
+          <strong>{{ t.code }} · {{ t.title }}</strong>
+          <span class="status-pill" [ngClass]="'st-' + t.status">{{ t.status_label }}</span>
+        </div>
+        <small>{{ categoryLabel(t.category) }} · gravedad {{ severityLabel(t.severity) | lowercase }} · {{ t.screen || 'sin pantalla' }} · {{ date(t.created_at) }}</small>
+        <p>{{ t.description }}</p>
+        <p *ngIf="t.admin_note" class="admin-note">Respuesta: {{ t.admin_note }}</p>
+      </article>
+    </div>
+  </section>
+</div>

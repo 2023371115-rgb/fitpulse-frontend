@@ -1,0 +1,36 @@
+<div class="smart-search">
+  <div *ngIf="loading" class="ss-state">Buscando…</div>
+  <div *ngIf="errorMsg" class="ss-error">{{ errorMsg }}</div>
+
+  <ng-container *ngIf="result && !loading">
+    <div class="ss-meta">
+      <strong>{{ result.hits.total }}</strong> resultado{{ result.hits.total === 1 ? '' : 's' }}
+      para “{{ result.query }}” · {{ result.took }} ms
+    </div>
+
+    <div class="ss-facets" *ngIf="facets.length > 1">
+      <button *ngFor="let f of facets" type="button" [class.active]="filter === f.index" (click)="setFilter(f.index)">
+        {{ f.label }} <span>{{ f.count }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="!result.hits.total" class="ss-state">
+      Sin resultados.
+      <ng-container *ngIf="result.suggestion">
+        ¿Quisiste decir <button type="button" class="ss-link" (click)="useSuggestion.emit(result.suggestion!)">{{ result.suggestion }}</button>?
+      </ng-container>
+    </div>
+
+    <ul class="ss-hits">
+      <li *ngFor="let hit of result.hits.hits" (click)="open(hit)" tabindex="0" (keydown.enter)="open(hit)">
+        <span class="ss-index">{{ label(hit._index) }}</span>
+        <div class="ss-body">
+          <strong [innerHTML]="titleHtml(hit)"></strong>
+          <p *ngIf="bodyHtml(hit)" [innerHTML]="bodyHtml(hit)"></p>
+          <small *ngIf="detail(hit)">{{ detail(hit) }}</small>
+        </div>
+        <span class="ss-score" title="Puntuación BM25">{{ hit._score }}</span>
+      </li>
+    </ul>
+  </ng-container>
+</div>

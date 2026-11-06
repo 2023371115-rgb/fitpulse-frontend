@@ -16,6 +16,8 @@ import { GoalsSessionsComponent } from './goals-sessions/goals-sessions.componen
 import { TvDashboardComponent } from './tv-dashboard/tv-dashboard.component';
 import { TermsModalComponent } from './terms-modal/terms-modal.component';
 import { AdminPanelComponent } from './admin-panel/admin-panel.component';
+import { SmartSearchComponent } from './smart-search/smart-search.component';
+import { TicketsComponent } from './tickets/tickets.component';
 
 
 @NgModule({
@@ -29,7 +31,9 @@ import { AdminPanelComponent } from './admin-panel/admin-panel.component';
     ProfileComponent,
     TvDashboardComponent,
     TermsModalComponent,
-    AdminPanelComponent
+    AdminPanelComponent,
+    SmartSearchComponent,
+    TicketsComponent
   ],
   imports: [
     BrowserModule,

@@ -511,7 +511,7 @@
   font-family: Consolas, 'Courier New', monospace;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1440px) {
   .app-header {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: stretch;
@@ -648,3 +648,6 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* El selector de modo de búsqueda necesita ancho propio dentro de la columna "auto". */
+.app-search .search-mode { min-width: 112px; }

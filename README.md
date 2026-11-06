@@ -6,7 +6,9 @@ Aplicacion web Angular para FitPulse Health Lab.
 
 - Login y registro de usuarios.
 - Dashboard de metas y sesiones.
-- Buscador interno y busqueda externa.
+- Buscador tipo Elasticsearch (modo *FitPulse*): sesiones, metas, reportes y más, con resaltado, facetas y tolerancia a errores. Modos *Archivos* y *Web* como antes.
+- **Reportar fallo**: formulario de tickets y lista de mis reportes con su estado.
+- Panel Admin con pestaña **Reportes de fallos** para cambiar estado y responder al usuario.
 - Panel de apariencia con temas.
 - Menu hamburguesa responsive.
 - Modal de terminos y uso.
@@ -41,6 +43,10 @@ Smart TV:
 ```text
 http://localhost:4200?tv=1
 ```
+
+## Despliegue en AWS
+
+En producción la web usa `apiUrl: '/api'` (mismo servidor). El script `deploy/aws.sh` del repo `fitpulse-backend` la compila y la sirve con nginx en la instancia EC2.
 
 ## Build
 
