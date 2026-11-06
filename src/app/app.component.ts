@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { VirtualFolderComponent } from './virtual-folder/virtual-folder.component';
@@ -597,6 +597,20 @@ export class AppComponent implements OnDestroy {
 
   toggleMobileMenu() {
     this.menuOpen = !this.menuOpen;
+  }
+
+  /** El menú de hamburguesa se cierra al hacer clic fuera de él. */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.menuOpen) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('.header-actions') || target?.closest('.hamburger-btn')) return;
+    this.menuOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.menuOpen = false;
   }
 
   private syncTv(selectedCardId: 'steps' | 'heart' | 'sessions' | 'devices', selectedIndex: number, lastAction: string) {

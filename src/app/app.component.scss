@@ -652,10 +652,62 @@
 /* El selector de modo de búsqueda necesita ancho propio dentro de la columna "auto". */
 .app-search .search-mode { min-width: 112px; }
 
-/* Entre laptop y monitor grande los botones no caben junto al buscador:
-   pasan a una segunda fila en lugar de encimarse (con Admin hay uno más). */
-@media (min-width: 1181px) and (max-width: 1919px) {
-  .app-header { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
-  .header-actions { justify-content: flex-end; flex-wrap: wrap; }
-}
+/* ───────── Encabezado: buscador + lo más usado + menú de hamburguesa ───────── */
 .app-search { min-width: 0; }
+
+.header-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+}
+
+.btn-report {
+  border-color: color-mix(in srgb, #f97316 45%, var(--color-border-strong));
+}
+
+.hamburger-btn { display: inline-flex; }
+
+.header-actions {
+  position: absolute;
+  top: calc(100% - 4px);
+  right: 24px;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 240px;
+  padding: 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 24px 48px -24px rgba(15, 23, 42, .55);
+}
+
+.header-actions.is-open { display: flex; }
+
+.header-actions button,
+.theme-picker-wrap,
+.theme-picker-wrap button {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.menu-user {
+  padding: 4px 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.menu-logout { color: #dc2626; }
+.menu-mobile-only { display: none; }
+
+@media (max-width: 700px) {
+  .header-primary .btn-dashboard { display: none; }
+  .menu-mobile-only { display: inline-flex; }
+  .header-actions { left: 14px; right: 14px; width: auto; }
+}

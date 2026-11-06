@@ -33,36 +33,41 @@
     </div>
   </div>
 
-  <button
-    class="hamburger-btn"
-    type="button"
-    [class.is-open]="menuOpen"
-    [attr.aria-expanded]="menuOpen"
-    aria-label="Abrir menu"
-    (click)="toggleMobileMenu()">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+  <!-- Siempre visibles: lo más usado -->
+  <div class="header-primary">
+    <button class="btn-dashboard" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
+    <button class="btn-dashboard btn-report" (click)="openTickets()">Reportar fallo</button>
+    <button
+      class="hamburger-btn"
+      type="button"
+      [class.is-open]="menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      aria-label="Abrir menú"
+      title="Más opciones"
+      (click)="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
 
-  <div class="header-actions" [class.is-open]="menuOpen">
+  <!-- Menú de hamburguesa -->
+  <nav class="header-actions" [class.is-open]="menuOpen" aria-label="Más opciones">
+    <span class="menu-user" *ngIf="currentUserName">{{ currentUserName }}</span>
+    <button class="btn-dashboard menu-mobile-only" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
+    <button class="btn-dashboard menu-mobile-only" (click)="openTickets()">Reportar fallo</button>
+    <button class="btn-logout" (click)="openProfile()" title="Mi perfil">Mi perfil</button>
+    <button class="btn-dashboard" *ngIf="isSuperAdmin" (click)="openAdmin()">Panel admin</button>
     <div class="theme-picker-wrap">
       <button class="btn-theme" (click)="toggleThemePicker()" title="Personalizar apariencia">
         <span class="theme-current" [style.background]="customTheme.primary"></span>
         Apariencia
       </button>
     </div>
-    <button class="btn-dashboard" (click)="toggleDashboard()">{{ showDashboard ? '← Volver' : 'Panel Salud' }}</button>
     <button class="btn-dashboard" (click)="openTvMode()">Modo TV</button>
-    <button class="btn-dashboard" (click)="openTickets()">Reportar fallo</button>
     <button class="btn-logout" (click)="openTerms()">Términos</button>
-    <button class="btn-dashboard" *ngIf="isSuperAdmin" (click)="openAdmin()">Admin</button>
-
-    <!-- BOTÓN PERFIL -->
-    <button class="btn-logout" (click)="openProfile()" title="Mi perfil">Mi perfil</button>
-
-    <button class="btn-logout" (click)="onLogout()">Cerrar Sesión</button>
-  </div>
+    <button class="btn-logout menu-logout" (click)="onLogout()">Cerrar sesión</button>
+  </nav>
 </header>
 
 <div class="theme-overlay" *ngIf="showThemePicker" (click)="closeThemePicker()">
