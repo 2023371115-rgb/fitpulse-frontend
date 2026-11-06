@@ -28,9 +28,6 @@
         <option value="files">Archivos</option>
         <option value="external">Web</option>
       </select>
-      <select *ngIf="searchMode === 'external'" [(ngModel)]="externalType" aria-label="Tipo de búsqueda externa" class="search-subtype">
-        <option value="web">Web</option>
-      </select>
       <button class="btn-search" (click)="onSearch()">Buscar</button>
       <button class="btn-clear" *ngIf="searchQuery" (click)="clearSearch()">Limpiar</button>
     </div>

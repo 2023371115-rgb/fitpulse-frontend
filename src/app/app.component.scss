@@ -511,7 +511,7 @@
   font-family: Consolas, 'Courier New', monospace;
 }
 
-@media (max-width: 1440px) {
+@media (max-width: 1180px) {
   .app-header {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: stretch;
@@ -651,3 +651,11 @@
 
 /* El selector de modo de búsqueda necesita ancho propio dentro de la columna "auto". */
 .app-search .search-mode { min-width: 112px; }
+
+/* Entre laptop y monitor grande los botones no caben junto al buscador:
+   pasan a una segunda fila en lugar de encimarse (con Admin hay uno más). */
+@media (min-width: 1181px) and (max-width: 1919px) {
+  .app-header { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
+  .header-actions { justify-content: flex-end; flex-wrap: wrap; }
+}
+.app-search { min-width: 0; }
